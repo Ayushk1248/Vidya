@@ -1,0 +1,8 @@
+import {pageSession} from '@/lib/platform/web-session'
+import {AuditIntegrity} from '@/components/audit-integrity'
+import {activities} from '@/lib/platform/workflows.mjs'
+import {WorkspaceShell,PageHeading,SyntheticNote} from '@/components/workspace-shell'
+import {redirect} from 'next/navigation'
+export const dynamic='force-dynamic'
+export default async function Page(){const {user,actor}=await pageSession();if(!actor)redirect('/onboarding');const rows=activities(actor)
+ return <WorkspaceShell actor={actor} name={user.user_metadata?.display_name||user.email?.split('@')[0]||'Account'} active="activity"><PageHeading eyebrow="ACCOUNTABILITY" title="Every action has a history." description={actor.role==='aicte_admin'?'Review recent access and consent actions across the platform.':'Review your recent access and consent actions.'}/><SyntheticNote/>{actor.role==='aicte_admin'&&<AuditIntegrity/>}<section className="card table-card"><div className="table-title"><h2>Activity log</h2><span className="muted">Latest {rows.length} events</span></div><div className="table-scroll"><table><thead><tr><th>Event</th><th>Action</th><th>Reference</th><th>Time (IST)</th></tr></thead><tbody>{rows.map(row=><tr key={row.sequence}><td>#{row.sequence.toString().padStart(4,'0')}</td><td><strong>{row.action.replaceAll('.',' · ').replaceAll('_',' ')}</strong></td><td className="mono">{row.entity_id.slice(0,12)}</td><td>{new Date(row.created_at).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})}</td></tr>)}</tbody></table></div>{!rows.length&&<div className="empty-inline"><h3>No activity recorded yet.</h3><p>Your first access or consent action will appear here.</p></div>}</section></WorkspaceShell>}

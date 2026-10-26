@@ -1,0 +1,15 @@
+import type {Actor} from './repository.mjs';
+export type Verification={id:string;status:'Valid'|'Tampered'|'Revoked';issued_at:string;revoked_at:string|null;version:number;institution:string|null;academic_year:number|null;checks:{signature_valid:boolean;current_record_matches:boolean;selected_pdf_matches:boolean|null};message:string};
+export type CertificateDetail=Verification&{enrolment_id:string;student_id:string;student_name:string;apaar:string;verify_url:string;revocation_reason:string|null};
+export type CertificateRow={id:string;student_id:string;institution_id:string;version:number;status:string;name:string;apaar:string;institution_name:string;program_name:string;certificate_id:string|null;certificate_status:string|null;eligible:boolean};
+export type CertificateOverview={rows:CertificateRow[];total:number;page:number;page_size:number;history:{id:string;version:number;created_at:string;revoked_at:string|null;student_id:string;name:string;status:string}[];public_origin:string};
+export function canonical(value:unknown):string;
+export function sha256(value:string|Buffer):string;
+export function issueCertificate(actor:Actor,enrolmentId:string,version:number):Promise<{id:string;reused:boolean}>;
+export function certificateDetail(actor:Actor,id:string):CertificateDetail;
+export function certificateOverview(actor:Actor,year?:number,page?:number,search?:string):CertificateOverview;
+export function downloadCertificate(actor:Actor,id:string):Buffer;
+export function revokeCertificate(actor:Actor,id:string,reason:string):{alreadyRevoked:boolean};
+export function publicVerification(id:string,fileHash?:string):Verification;
+export function inspectCertificate(id:string,fileHash?:string):Verification;
+export function publicOrigin():string;

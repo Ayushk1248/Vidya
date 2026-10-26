@@ -1,0 +1,10 @@
+export type Actor = {user_id:string; role:string; institution_id:string|null; region:string|null; student_id:string|null};
+export type Institution = {id:string; name:string; region:string; state:string; district:string; institution_type:string; program_count:number};
+export type Program = {id:string; name:string; approved_intake:number; approved:number; deadline:string; within_count:number; supernumerary_count:number};
+export type Enrolment = {id:string; student_id:string; institution_id:string; name:string; dob:string; apaar:string; program_name:string; institution_name:string; scheme:string; status:string; version:number; provenance:string};
+export function actorFor(id:string):Actor|undefined;
+export function institutions(actor:Actor):Institution[];
+export function institution(actor:Actor,id:string):Institution;
+export function programs(actor:Actor,id:string,year?:number):Program[];
+export function enrolments(actor:Actor,options?:{institutionId?:string; programId?:string; id?:string; year?:number; page?:string|null}):{total:number;page:number;pageSize:number;rows:Enrolment[]};
+export function enrolment(actor:Actor,id:string,year?:number):Enrolment;

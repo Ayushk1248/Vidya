@@ -1,0 +1,43 @@
+{
+  "name": "sih26263-vidya",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "init": "node scripts/init.mjs",
+    "seed": "node --env-file=.env.local scripts/seed.mjs",
+    "role": "node --env-file=.env.local scripts/assign-role.mjs",
+    "test": "node --env-file=.env.local --test tests/*.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "test:validation": "\".venv\\Scripts\\python.exe\" -m unittest discover -s services/validation -p test_*.py"
+  },
+  "dependencies": {
+    "@pdf-lib/fontkit": "1.1.1",
+    "@supabase/ssr": "0.12.5",
+    "@supabase/supabase-js": "2.112.4",
+    "clsx": "2.1.1",
+    "lucide-react": "1.16.0",
+    "next": "16.4.3",
+    "pdf-lib": "1.17.1",
+    "qrcode": "1.5.4",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "tailwind-merge": "3.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.3",
+    "jsqr": "1.4.0",
+    "pngjs": "7.0.0",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "packageManager": "pnpm@11.24.0"
+}

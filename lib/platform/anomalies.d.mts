@@ -1,0 +1,17 @@
+import type {Actor} from './repository.mjs';
+export type AnomalyPolicy={min_peers:number;min_enrolments:number;high_threshold:number;moderate_threshold:number};
+export type Metric={key:string;label:string;value:number|null;peer_median:number|null;display:string;peer_display:string;deviation:number;model_score_drop:number};
+export type Features={metrics:Metric[];peer_label:string;peer_count:number;capacity_band:string;notes:string[];enrolments:number;previous_enrolments:number;approved_intake:number;within_intake:number;unresolved_identities:number;missing_registry:number;edited_records:number;shared_students:number;distinct_students:number;mobile_present:number;raw_score:number|null;score:number|null;band:string};
+export type Anomaly={id:string;institution_id:string;institution_name:string;region:string;state:string;academic_year:number;score:number|null;status:string;review_note:string|null;reviewed_at:string|null;features:Features;reasons:string[];band:string;revision:number;run_id:string};
+export type Run={id:string;year:number;status:string;created_at:string;completed_at:string|null;error:string|null;model_version:string|null;policy:AnomalyPolicy};
+export type Overview={run:Run|null;job:Run|null;stale:boolean;policy:AnomalyPolicy;rows:Anomaly[];summary:{total:number;high:number;open:number;cleared:number;confirmed:number;insufficient:number}};
+export type Detail={snapshot:Anomaly;history:{score:number|null;status:string;review_note:string|null;reviewed_at:string|null;decision:string|null;note:string|null;created_at:string|null;completed_at:string;model_version:string}[]};
+export function anomalyOverview(actor:Actor,year?:number):Overview;
+export function anomalyDetail(actor:Actor,id:string):Detail;
+export function requestAnalysis(actor:Actor,year?:number):{id:string;reused:boolean};
+export function reviewAnomaly(actor:Actor,id:string,status:string,note:string,revision:number):{status:string};
+export function saveAnomalyPolicy(actor:Actor,input:AnomalyPolicy):AnomalyPolicy;
+export function policy():AnomalyPolicy;
+export function scheduleAnalysis():unknown;
+export function processAnalysis():Promise<boolean>;
+export function analysisInput(year:number):unknown;

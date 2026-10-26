@@ -1,0 +1,7 @@
+import {apiError} from '@/lib/platform/session'
+import {AccessError} from '@/lib/platform/access.mjs'
+import {publicVerification} from '@/lib/platform/certificates.mjs'
+export const runtime='nodejs'
+const headers={'cache-control':'no-store','x-content-type-options':'nosniff','referrer-policy':'no-referrer'}
+export async function GET(request:Request){try{return Response.json(publicVerification(new URL(request.url).searchParams.get('id')||''),{headers})}catch(e){return apiError(e)}}
+export async function POST(request:Request){try{if(request.headers.get('origin')!==new URL(request.url).origin)throw new AccessError('Request origin rejected.',403);if(!request.headers.get('content-type')?.includes('application/json'))throw new AccessError('Send JSON.',415);const reader=request.body?.getReader();if(!reader)throw new AccessError('Request body required.',400);let text='',size=0;const decoder=new TextDecoder();while(true){const part=await reader.read();if(part.done)break;size+=part.value.byteLength;if(size>500){await reader.cancel();throw new AccessError('Request too large.',413)}text+=decoder.decode(part.value,{stream:true})}text+=decoder.decode();let body;try{body=JSON.parse(text)}catch{throw new AccessError('Invalid JSON.',400)}if(!body||typeof body.id!=='string'||typeof body.fileHash!=='string')throw new AccessError('Certificate ID and PDF fingerprint are required.',400);return Response.json(publicVerification(body.id,body.fileHash),{headers})}catch(e){return apiError(e)}}
