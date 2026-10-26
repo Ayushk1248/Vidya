@@ -52,3 +52,5 @@ body {margin:0;background:#fff;color:#142b49;font-family:Arial,Helvetica,sans-se
  .home-v2 .home-section>h2,.home-v2 .workflow-section h2{font-size:27px;letter-spacing:-.5px}
  .workspace-v2 .table-title{flex-wrap:wrap}.workspace-v2 .year-switch{flex-wrap:wrap;max-width:100%}
 }
+
+.history-filters{display:flex;flex-wrap:wrap;gap:14px;align-items:end;padding:22px;border-bottom:1px solid #e0e7ed}.history-filters label{display:flex;flex-direction:column;gap:8px;font-size:12px;color:#52687b;flex:1;min-width:145px}.history-filters input,.history-filters select{padding:10px;border:1px solid #d5dfe7;border-radius:6px;background:white;color:#142b49;min-height:42px;width:100%}.history-reference{overflow-wrap:anywhere;max-width:240px}.version-changed>td,.version-changed>th{background:#edf7f5}.version-changed>th{border-left:3px solid #147e79}.version-changed>td:last-child{font-weight:700;color:#12685f}@media(max-width:600px){.history-filters{padding:16px}.history-filters label{flex-basis:100%}}
