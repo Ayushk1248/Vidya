@@ -39,3 +39,19 @@ html{background:var(--v-bg);scroll-padding-top:95px}body{font-family:var(--font-
 
 /* Explicit utility fallbacks keep shared UI stable in every entry point. */
 .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}.premium-topbar .brand .brand-symbol{padding:0;font-size:24px;letter-spacing:-.1em;border:1px solid #21b9a64a;color:#6ee7d4}.premium-topbar .topbar-tools>button:not(.icon-button):not(.language-toggle){display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:11px;min-height:36px;border:1px solid var(--v-line);background:var(--v-solid);color:var(--v-ink);padding:8px 11px;border-radius:10px;white-space:nowrap}.premium-topbar .topbar-tools>button:not(.icon-button):not(.language-toggle)>svg{width:15px;height:15px}.auth-panel a[role=button]:hover{background:var(--v-soft)}@media(max-width:700px){.premium-topbar .brand .brand-symbol{display:none}.premium-topbar .topbar-tools>button:not(.icon-button):not(.language-toggle){font-size:9px;padding:6px;gap:4px}.premium-topbar .topbar-tools>button:not(.icon-button):not(.language-toggle)>svg{width:13px;height:13px}}
+
+/* Keep the shared account actions readable in the public header. */
+.home-v2 .topbar .brand{white-space:nowrap;flex-shrink:0}.home-v2 .home-nav .button{white-space:nowrap}@media(max-width:1000px){.home-v2 .home-nav{gap:12px}.home-v2 .topbar .brand>span{display:none}}
+
+/* Top-layer dialogs cannot be clipped by a sticky, blurred or animated ancestor. */
+.account-confirmation{position:fixed;inset:0;margin:auto;width:min(440px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;padding:28px;border:1px solid #dce4ed;border-radius:16px;background:#fff;color:#142b49;box-shadow:0 20px 65px #142b4930;text-align:left}
+.account-confirmation::backdrop{background:#101c32a6;backdrop-filter:blur(4px)}
+.account-confirmation h3{font-size:22px;font-weight:650;line-height:1.3;margin:0 0 12px}
+.account-confirmation p{font-size:14px;line-height:1.65;color:#526581;margin:12px 0}
+.confirmation-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:12px;margin-top:24px}
+.account-confirmation .confirmation-actions button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:11px 17px;border-radius:10px;font-weight:600;font-size:14px;cursor:pointer}
+.confirmation-cancel{background:#fff;color:#142b49;border:1px solid #dce4ed}.confirmation-primary{background:#142b49;color:#fff;border:1px solid #142b49}.confirmation-danger{background:#b42335;color:#fff;border:1px solid #b42335}
+.account-confirmation button:focus-visible{outline:3px solid #14b8a6;outline-offset:3px}.account-confirmation button:disabled{opacity:.5;cursor:wait}.confirmation-warning{color:#b42335;margin-bottom:16px}.account-confirmation .confirmation-error{background:#fff1f2;color:#b42335;padding:12px;border-radius:8px}
+.avatar-menu>div{display:flex;flex-direction:column;gap:4px}.avatar-menu>div>a{display:block;padding:10px 8px;border-radius:7px;line-height:1.4}.avatar-menu>div>a:hover{background:var(--v-soft)}.avatar-menu>div>a.account-delete-link{color:var(--v-danger)}
+#delete-account{scroll-margin-top:105px}
+@media(max-width:480px){.account-confirmation{padding:22px}.account-confirmation .confirmation-actions button{flex:1;font-size:12px}}

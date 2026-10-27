@@ -1,10 +1,13 @@
+import {requestOrigin} from '@/lib/platform/origin'
+import {removeDeletedAccountAccess} from '@/lib/platform/account-cleanup.mjs'
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { createClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 import { supabaseConfiguration } from '@/lib/auth/config'
 
-export async function POST() {
+export async function POST(request:Request) {
+  if(request.headers.get('origin')!==requestOrigin(request))return NextResponse.json({error:'Request origin rejected.'},{status:403})
   const cookieStore = await cookies()
   const { url: supabaseUrl, key: supabaseAnonKey } = supabaseConfiguration()
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -61,5 +64,8 @@ export async function POST() {
     )
   }
 
+  removeDeletedAccountAccess(userId)
+  await supabase.auth.signOut({scope:'local'})
+  cookieStore.delete('vidya-mfa')
   return NextResponse.json({ success: true })
 }

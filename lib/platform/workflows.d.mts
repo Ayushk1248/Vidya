@@ -6,7 +6,7 @@ export type Consent={id:string;purpose:string;requested_fields:string[];approved
 export function syncProfile(user:{id:string;email?:string;user_metadata?:Record<string,unknown>}):void;
 export function registrationData(userId:string):{institutions:{id:string;name:string;state:string}[];regions:string[];requests:AccessRequest[]};
 export function requestAccess(userId:string,input:Record<string,unknown>):{id:string};
-export function accessQueue(actor:Actor):{requests:AccessRequest[];members:(Actor&{display_name:string;institution_name?:string})[]};
+export function accessQueue(actor:Actor):{requests:AccessRequest[];members:(Actor&{display_name:string;institution_name?:string})[];unassigned:{user_id:string;display_name:string}[];regions:string[]};
 export function reviewAccess(actor:Actor,id:string,decision:string,note:string):{status:string};
 export function revokeAccess(actor:Actor,id:string,note:string):{status:string};
 export function overview(actor:Actor,year?:number):Overview;
@@ -21,3 +21,5 @@ export function consentResult(actor:Actor,id:string):{fields:Record<string,strin
 export function audit(actor:string,action:string,entity:string,details?:Record<string,unknown>):void;
 
 export function transaction<T>(fn:()=>T):T;
+
+export function assignStaffAccess(actor:Actor,input:Record<string,unknown>):{status:string};

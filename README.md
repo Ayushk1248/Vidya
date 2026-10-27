@@ -8,9 +8,9 @@ The local site runs at http://localhost:3001. The owner's account identified dur
 
 For each additional email:
 
-1. Choose Student, Institution, AICTE, or Verifier on the login page.
+1. Open Sign in or Create account. Login has no role selector.
 2. Sign in or create an account using the retained Google/email authentication.
-3. Complete the role request, scope and reason. Choosing a portal does not grant privileges.
+3. After signing in, request Student, Institution, Verifier or awarding-body access with its scope and reason. AICTE/system staff roles are assigned only by an AICTE administrator.
 4. Sign in as the prototype admin and approve it under **Access management**, with a review note.
 5. Return to the requesting account and refresh its status. Approved accounts go directly to their workspace on future logins.
 
@@ -112,3 +112,7 @@ Certificate workflow and QR limitations: [docs/CERTIFICATES_TESTING.md](docs/CER
 Reports: `/reports` supports scoped Excel/PDF exports. See [report checks](docs/REPORTS_TESTING.md) and the [completed feature checklist and deployment requirements](docs/PROTOTYPE_STATUS.md). After `npm run build`, `npm start` launches Next, FastAPI and both background workers together.
 
 Combined collaborator/local implementation: [integration notes](docs/INTEGRATION_NOTES.md). For local Google OAuth setup, see [Google sign-in](docs/GOOGLE_SIGN_IN.md).
+
+## Teammate setup
+
+See [public Supabase configuration and local/shared deployment differences](docs/TEAMMATE_SETUP.md). Account settings and the deletion confirmation are available from the workspace avatar menu.

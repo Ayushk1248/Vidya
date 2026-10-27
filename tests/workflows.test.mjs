@@ -8,7 +8,7 @@ const directory=mkdtempSync(path.join(os.tmpdir(),'vidya-workflows-'));
 process.env.PLATFORM_DB=path.join(directory,'test.sqlite');
 const {db}=await import('../lib/platform/db.mjs');
 const {encrypt}=await import('../lib/platform/crypto.mjs');
-const {requestAccess,reviewAccess,revokeAccess,accessQueue,syncProfile,requestConsent,decideConsent,consentResult,consentList,overview,limit}=await import('../lib/platform/workflows.mjs');
+const {requestAccess,assignStaffAccess,reviewAccess,revokeAccess,accessQueue,syncProfile,requestConsent,decideConsent,consentResult,consentList,overview,limit}=await import('../lib/platform/workflows.mjs');
 const {actorFor}=await import('../lib/platform/repository.mjs');
 const d=db();
 after(()=>{d.close();rmSync(directory,{recursive:true,force:true})});
@@ -35,7 +35,8 @@ test('requesting a role never grants it automatically',()=>{
 });
 test('heads cannot approve another institution, AICTE roles, or their own request',()=>{
  const id=request('outside','institution_operator',{institution_id:'B'});assert.throws(()=>reviewAccess(head,id,'approved','Approve foreign institution'),/not found/);
- const adminRequest=request('candidate-admin','aicte_admin');assert.throws(()=>reviewAccess(head,adminRequest,'approved','Escalation attempt'),/not found/);
+ assert.throws(()=>request('candidate-admin','aicte_admin'),/only be assigned/);
+ assert.throws(()=>assignStaffAccess(head,{user_id:'candidate-admin',role:'aicte_admin',designation:'Officer',note:'Verified staff affiliation'}),/Only AICTE/);
  const own=request('self','institution_operator',{institution_id:'A'});assert.throws(()=>reviewAccess({...head,user_id:'self'},own,'approved','Approve own request'),/own request/);
  assert.throws(()=>accessQueue({role:'institution_operator',institution_id:'A'}),/Only AICTE/);
 });
@@ -101,4 +102,31 @@ test('owner transfer requires the original verified email and matching project, 
  assert.equal(actorFor('new-owner').role,'aicte_admin');assert.equal(actorFor('old-owner'),undefined);
  assert.equal(migrateVerifiedOwner(owner),false);
  if(previousUrl===undefined)delete process.env.NEXT_PUBLIC_SUPABASE_URL;else process.env.NEXT_PUBLIC_SUPABASE_URL=previousUrl;
+});
+
+
+test('privileged staff assignment is administrator-only, scoped and cannot replace an approved role',()=>{
+ for(const role of ['regional_officer','aicte_admin','system_admin'])assert.throws(()=>request('candidate-admin',role,{region:'North'}),/only be assigned/);
+ syncProfile({id:'staff-region',email:'staff@example.invalid'});
+ const input={user_id:'staff-region',role:'regional_officer',designation:'Regional Officer',note:'Affiliation checked by administrator',region:'North'};
+ assert.throws(()=>assignStaffAccess(head,input),/Only AICTE/);
+ assert.throws(()=>assignStaffAccess(admin,{...input,user_id:'admin'}),/own role/);
+ assert.throws(()=>assignStaffAccess(admin,{...input,region:'Nowhere'}),/valid region/);
+ assert.equal(actorFor('staff-region'),undefined);
+ assignStaffAccess(admin,input);assert.equal(actorFor('staff-region').region,'North');
+ assert.throws(()=>assignStaffAccess(admin,input),/already has/);
+ assert.throws(()=>request('staff-region','student',{institution_id:'A',student_id:'STU00001'}),/already has/);
+ assert.deepEqual(accessQueue(head).unassigned,[]);
+});
+
+test('deleted sign-in cleanup releases student links but retains academic records and audit evidence',async()=>{
+ const {removeDeletedAccountAccess}=await import('../lib/platform/account-cleanup.mjs');
+ syncProfile({id:'deleted-student',email:'deleted@example.invalid'});
+ d.prepare("INSERT INTO role_assignments(user_id,role,student_id) VALUES('deleted-student','student','STU00002')").run();
+ const before=d.prepare('SELECT count(*) n FROM enrolments').get().n;
+ removeDeletedAccountAccess('deleted-student');
+ assert.equal(actorFor('deleted-student'),undefined);
+ assert.equal(d.prepare("SELECT user_id FROM account_profiles WHERE user_id='deleted-student'").get(),undefined);
+ assert.equal(d.prepare('SELECT count(*) n FROM enrolments').get().n,before);
+ assert.ok(d.prepare("SELECT sequence FROM audit_events WHERE action='account.deleted' AND actor_id='deleted-student'").get());
 });

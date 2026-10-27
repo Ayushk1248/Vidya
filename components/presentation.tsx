@@ -9,7 +9,7 @@ export function PresentationProvider({children}:{children:React.ReactNode}){
   document.documentElement.dataset.theme='light'
   document.documentElement.style.colorScheme='light'
   // Clear the retired preference so existing browsers return to the white theme.
-  try{localStorage.removeItem('vidya-theme')}catch{}
+  try{localStorage.removeItem('vidya-theme');localStorage.removeItem('vidya.requestedRole')}catch{}
  },[])
  return <MotionConfig reducedMotion="user"><motion.div key={pathname} initial={{opacity:.7}} animate={{opacity:1}} transition={{duration:.18}}>{children}</motion.div></MotionConfig>
 }

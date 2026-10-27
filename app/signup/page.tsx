@@ -1,7 +1,6 @@
 'use client'
 import {Label} from '@/components/language'
 
-import { PortalPicker } from '@/components/portal-picker'
 import { GoogleSignIn } from '@/components/google-sign-in'
 import { PasswordInput } from '@/components/password-input'
 
@@ -90,10 +89,10 @@ export default function SignupPage() {
       <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm ">
         <h1 className="mb-2 text-center text-2xl font-bold text-[#142b49]"><Label text="Create your account"/></h1>
         <p className="mb-6 text-center text-sm text-slate-600">
-          Create your VIDYA account. An administrator will assign your role and data access.
+          Create your account first. After signing in, request your role and link your institution or synthetic student record.
         </p>
 
-        <PortalPicker />
+
 
         {error && (
           <p role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-center text-sm text-red-700">
