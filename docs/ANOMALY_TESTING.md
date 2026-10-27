@@ -42,3 +42,10 @@ The browser must use an authenticated role-approved account. Automated service/d
 ## Research follow-up
 
 See ANOMALY_RESEARCH_BRIEF.md for a teammate task on peer validity, false positives, fair evaluation and legitimate explanations. Model policies should be revised against that evidence before any real-data deployment.
+
+
+## APAAR evidence display
+
+Inspect a case to see three separate evidence groups: current format/registry counts; saved name/DOB disagreements (unsuccessful snapshot checks minus snapshot rows without a registry match); and current repeated-ID counts. Current counters use effective corrected enrolment values and the selected academic year. Cross-institution counts disclose only how many own records have an ID present elsewhere. They do not establish overlapping attendance or duplicate people. Current counts can overlap and are not added to a risk score. The saved mismatch count has its exact run completion date; refresh analysis if the snapshot is stale.
+
+The peer-context panel displays peer/enrolment minima, national fallback and small-capacity cautions. It does not change eligibility, thresholds, peer definitions, score mapping or review permissions. The research note supplies review prompts, not validated statutory requirements. Tests cover count partitions, year and scope restrictions, effective overrides, privacy and snapshot timestamp binding.

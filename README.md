@@ -107,3 +107,8 @@ Upload workflow testing: see [UPLOAD_TESTING.md](UPLOAD_TESTING.md). The develop
 Anomaly Centre testing and model assumptions: [docs/ANOMALY_TESTING.md](docs/ANOMALY_TESTING.md). Teammate research brief: [docs/ANOMALY_RESEARCH_BRIEF.md](docs/ANOMALY_RESEARCH_BRIEF.md).
 
 Certificate workflow and QR limitations: [docs/CERTIFICATES_TESTING.md](docs/CERTIFICATES_TESTING.md). Public checker: `/verify`; authenticated centre: `/certificates`.
+
+
+Reports: `/reports` supports scoped Excel/PDF exports. See [report checks](docs/REPORTS_TESTING.md) and the [completed feature checklist and deployment requirements](docs/PROTOTYPE_STATUS.md). After `npm run build`, `npm start` launches Next, FastAPI and both background workers together.
+
+Combined collaborator/local implementation: [integration notes](docs/INTEGRATION_NOTES.md). For local Google OAuth setup, see [Google sign-in](docs/GOOGLE_SIGN_IN.md).

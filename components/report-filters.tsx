@@ -62,8 +62,8 @@ export function ReportFilters({ options, initial, types, summary }: { options: R
       </div>
       <div className="actions report-search-actions"><button type="submit" className="button"><Search size={16}/>Apply filters</button><Link className="text-button" href={'/reports?type=' + fields.type + '&year=' + fields.year}>Clear filters</Link></div>
     </form>
-    <div className="report-export-summary" role="status"><strong>{dirty ? 'Apply filters to update the preview and enable downloads.' : 'Showing: ' + summary}</strong><p>{dirty ? 'Your search has changed. Downloads become available after applying it.' : 'Preview and downloads use the same college and filters. Downloads include all matching rows.'}</p></div>
-    {['compliance', 'anomalies'].includes(fields.type) && <p className="small muted">This report shows institution-level metrics. Program and category filters select the matching colleges.</p>}
+    <div className="report-export-summary" role="status"><strong>{dirty ? 'Apply filters to update the preview and enable downloads.' : 'Showing: ' + summary}</strong><p>{dirty ? 'Your search has changed. Downloads become available after applying it.' : 'Preview and downloads use the same college and filters. CSV and Excel include all matching rows. PDF includes up to 1,000 rows with its limit stated in the file.'}</p></div>
+    {['compliance', 'anomalies', 'enrolment', 'validation', 'anomaly', 'capacity'].includes(fields.type) && <p className="small muted">This report shows institution-level metrics. Program and category filters select the matching colleges.</p>}
     <div className="actions report-downloads">{['csv', 'xlsx', 'pdf'].map(format => { const download = new URLSearchParams(params); download.set('format', format); return dirty ? <button key={format} className="button secondary" disabled>Download {format.toUpperCase()}</button> : <a key={format} className="button secondary" href={'/api/platform/report?' + download}>Download {format.toUpperCase()}</a> })}</div>
   </section>
 }

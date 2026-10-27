@@ -25,10 +25,10 @@ test('demo mode requires explicit local configuration and is disabled in product
 test('TOTP matches the RFC vector, rejects replay and consumes recovery codes once',()=>{assert.equal(totp('GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',1),'287082');const setup=beginMfa('MFA-USER'),code=totp(setup.secret),result=confirmMfa('MFA-USER',code);assert.equal(result.recovery_codes.length,8);assert.throws(()=>confirmMfa('MFA-USER',code));assert.equal(confirmMfa('MFA-USER',result.recovery_codes[0]).verified,true);assert.throws(()=>confirmMfa('MFA-USER',result.recovery_codes[0]))});
 test('API keys and OAuth tokens are institution scoped; revocation takes effect immediately',()=>{assert.throws(()=>createClient(other,'A','Forbidden client'));const client=createClient(head,'A','Synthetic ERP'),token=accessToken(client.id,client.secret);for(const headers of [{'x-api-key':client.api_key},{authorization:'Bearer '+token.access_token}])assert.equal(integrationActor(new Request('http://localhost/api',{headers})).institution_id,'A');revokeClient(head,client.id);assert.throws(()=>integrationActor(new Request('http://localhost/api',{headers:{authorization:'Bearer '+token.access_token}})))});
 test('technical administrator cannot browse student institutions; awarding bodies remain scoped',()=>{assert.throws(()=>institutions({role:'system_admin'}));assert.deepEqual(institutions({role:'awarding_body',institution_id:'A'}).map(i=>i.id),['A'])});
-test('reports enforce scope before aggregation and export readable multi-page PDF/CSV',async()=>{const data=reportData(head,{type:'intake',year:2026});assert.equal(data.rows.length,1);assert.equal(data.rows[0][0],'Synthetic A');assert.equal(reportData(head,{institution:'B'}).rows.length,0);assert.throws(()=>reportData({role:'external_verifier'}));const pdf=await exportReport(head,{type:'intake',format:'pdf'});assert.ok((await PDFDocument.load(pdf.bytes)).getPageCount()>0);assert.match((await exportReport(head,{format:'csv'})).bytes.toString(),/Synthetic A/);assert.throws(()=>reportData(head,{year:'bad'}))});
+test('reports enforce scope before aggregation and export readable multi-page PDF/CSV',async()=>{const data=reportData(head,{type:'intake',year:2026});assert.equal(data.rows.length,1);assert.equal(data.rows[0][data.columns.indexOf('Institution')],'Synthetic A');assert.throws(()=>reportData(head,{institution:'B'}));assert.throws(()=>reportData({role:'external_verifier'}));const pdf=await exportReport(head,{type:'intake',format:'pdf'});assert.ok((await PDFDocument.load(pdf.bytes)).getPageCount()>0);assert.match((await exportReport(head,{format:'csv'})).bytes.toString(),/Synthetic A/);assert.throws(()=>reportData(head,{year:'bad'}))});
 test('report search accepts college names and IDs while suggestions and exports preserve scope',async()=>{
  for(const institution of ['A',' a ','Synthetic A',' synthetic a ','thetic A']){
-  const report=reportData(admin,{institution});assert.equal(report.rows.length,1,institution);assert.equal(report.rows[0][0],'Synthetic A');assert.equal(report.filter_summary,'Synthetic A');
+  const report=reportData(admin,{institution});assert.equal(report.rows.length,1,institution);assert.equal(report.rows[0][report.columns.indexOf('Institution')],'Synthetic A');assert.equal(report.filter_summary,'Synthetic A');
  }
  assert.equal(reportData(admin,{institution:'Synthetic',program:'synthetic program'}).rows.length,2);
  assert.equal(reportData(admin,{institution:'A Synthetic'}).rows.length,1,'search words can appear in any order');
@@ -41,7 +41,7 @@ test('report search accepts college names and IDs while suggestions and exports 
  assert.deepEqual(reportFilterOptions(head).programs.map(p=>p.id),['AP']);
  assert.throws(()=>reportFilterOptions({role:'external_verifier'}));
  for(const type of ['intake','apaar','category','pending','excess','compliance','anomalies']){
-  assert.ok(reportData(admin,{type,institution:'Synthetic A'}).rows.every(row=>row[0]==='Synthetic A'),type);
+  const scoped=reportData(admin,{type,institution:'Synthetic A'});assert.ok(scoped.rows.every(row=>row[scoped.columns.indexOf('Institution')]==='Synthetic A'),type);
  }
  const csv=await exportReport(admin,{institution:'Synthetic A',format:'csv'});
  assert.match(csv.bytes.toString(),/Synthetic A/);assert.doesNotMatch(csv.bytes.toString(),/Synthetic B/);assert.match(csv.filename,/Synthetic-A/);

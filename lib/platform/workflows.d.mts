@@ -19,3 +19,5 @@ export function decideConsent(actor:Actor,id:string,decision:string,fields?:stri
 export function consentResult(actor:Actor,id:string):{fields:Record<string,string|number>;source:string;expires_at:string};
 
 export function audit(actor:string,action:string,entity:string,details?:Record<string,unknown>):void;
+
+export function transaction<T>(fn:()=>T):T;
