@@ -13,7 +13,7 @@ const regional={role:'regional_officer',region:'North'};
 const student={role:'student',student_id:'STU00001'};
 const verifier={role:'external_verifier'};
 const d=db();
-test('original authentication service modules remain byte-for-byte unchanged',()=>{
+test('unrelated email/profile and deletion service modules remain unchanged',()=>{
  const baseline=JSON.parse(readFileSync('tests/auth-baseline.json','utf8'));
  for(const [file,hash] of Object.entries(baseline)) assert.equal(createHash('sha256').update(readFileSync(file)).digest('hex'),hash,file);
 });

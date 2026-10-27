@@ -1,0 +1,10 @@
+import {requestOrigin} from '@/lib/platform/origin'
+import {cookies} from 'next/headers'
+import QRCode from 'qrcode'
+import {signedInUser} from '@/lib/platform/web-session'
+import {beginMfa,confirmMfa} from '@/lib/platform/mfa.mjs'
+import {apiError} from '@/lib/platform/session'
+import {seal} from '@/lib/platform/tokens.mjs'
+import {limit,audit} from '@/lib/platform/workflows.mjs'
+import {AccessError} from '@/lib/platform/access.mjs'
+export async function POST(request:Request){try{if(request.headers.get('origin')!==requestOrigin(request))throw new AccessError();const user=await signedInUser();limit('mfa:'+user.id,6);const body=await request.json();if(body.action==='begin'){const setup=beginMfa(user.id);return Response.json({...setup,qr:await QRCode.toDataURL(setup.uri)},{headers:{'Cache-Control':'no-store'}})}if(body.action!=='verify')throw new AccessError('Invalid action',400);const result=confirmMfa(user.id,body.code);(await cookies()).set('vidya-mfa',seal({id:user.id},'mfa'),{httpOnly:true,sameSite:'strict',secure:process.env.NODE_ENV==='production',path:'/',maxAge:3600});audit(user.id,'security.mfa_verified',user.id);return Response.json(result,{headers:{'Cache-Control':'no-store'}})}catch(e){return apiError(e)}}

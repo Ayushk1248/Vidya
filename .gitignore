@@ -49,3 +49,7 @@ data/
 
 # Synthetic artifact QA intermediates
 tmp/
+
+/.next-production-check/
+__pycache__/
+*.pyc

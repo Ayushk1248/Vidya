@@ -20,6 +20,13 @@ d.prepare("INSERT INTO enrolments VALUES('B1','S','B','B1',2026,'2026-08-01','20
 for(let i=0;i<105;i++)d.prepare("INSERT INTO upload_batches(id,institution_id,uploaded_by,academic_year,filename,status) VALUES(?,'A','op',2026,'synthetic.csv','review')").run('U'+i);
 d.prepare("INSERT INTO upload_batches(id,institution_id,uploaded_by,academic_year,filename,status) VALUES('OLD','A','op',2025,'synthetic.csv','signed_off')").run();
 const now=new Date('2026-09-29T19:00:00Z');
+
+test('dashboard props contain only plain serializable objects for every oversight role',()=>{
+ function plain(value){if(!value||typeof value!=='object')return;if(Array.isArray(value)){value.forEach(plain);return}assert.equal(Object.getPrototypeOf(value),Object.prototype);Object.values(value).forEach(plain)}
+ for(const actor of [admin,head,{role:'regional_officer',user_id:'regional',region:'North'}]){
+  const data=dashboardData(actor,2026,now);plain(data);assert.deepEqual(JSON.parse(JSON.stringify(data)),data)
+ }
+});
 test('Year-scoped, uncapped submission totals; deadlines use India time and historical flags are not approval',()=>{
  const x=dashboardData(admin,2026,now);assert.equal(x.today,'2026-09-30');assert.equal(x.uploads.reduce((n,b)=>n+b.count,0),105);
  const a=x.tracker.find(i=>i.id==='A');assert.equal(a.status,'Awaiting Head');assert.equal(a.approved_records,0);assert.equal(a.days_remaining,0);assert.equal(a.deadline_status,'Due soon');assert.equal(a.complete,false);

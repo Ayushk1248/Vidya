@@ -1,0 +1,13 @@
+'use client'
+import {useCallback,useEffect,useRef,useState} from 'react'
+import {RefreshCw,Radio} from 'lucide-react'
+import type {ReportPreview} from '@/lib/platform/reports.mjs'
+export function LiveReport({initial,query}:{initial:ReportPreview;query:string}){
+ const [data,setData]=useState(initial),[live,setLive]=useState(true),[busy,setBusy]=useState(false),[error,setError]=useState('')
+ const pending=useRef<AbortController|null>(null)
+ const refresh=useCallback(async()=>{if(pending.current)return;const controller=new AbortController();pending.current=controller;setBusy(true);try{const response=await fetch('/api/platform/reports?'+query,{cache:'no-store',signal:controller.signal});const result=await response.json();if(!response.ok)throw new Error(result.error||'Could not refresh this report.');setData(result);setError('')}catch(e){if(!controller.signal.aborted)setError((e as Error).message)}finally{if(pending.current===controller){pending.current=null;setBusy(false)}}},[query])
+ useEffect(()=>{if(!live)return;const timer=setInterval(()=>{if(document.visibilityState==='visible')void refresh()},20000);return()=>clearInterval(timer)},[live,refresh])
+ useEffect(()=>()=>{pending.current?.abort();pending.current=null},[])
+ const stamp=new Date(data.generated_at).toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',second:'2-digit'})
+ return <section className="card table-card"><div className="table-title live-report-header"><div><h2>{data.title}</h2><p className="report-freshness"><Radio size={13}/>{live?'Auto-refresh every 20 seconds':'Auto-refresh paused'} · Checked {stamp} IST</p></div><div className="actions"><label className="live-switch"><input type="checkbox" checked={live} onChange={e=>setLive(e.target.checked)}/>Live preview</label><button type="button" className="button secondary" disabled={busy} onClick={()=>void refresh()}><RefreshCw size={14} className={busy?'refreshing':''}/>{busy?'Refreshing…':'Refresh now'}</button><span>{data.row_count} report rows</span></div></div>{error&&<p className="report-refresh-error" role="alert">{error} Last successful snapshot remains visible.</p>}<div className="table-scroll"><table><thead><tr>{data.columns.map(c=><th key={c}>{c}</th>)}</tr></thead><tbody>{data.rows.map((row,i)=><tr key={i}>{row.map((value,j)=><td key={j}>{value}</td>)}</tr>)}</tbody></table></div>{!data.row_count&&<p className="table-foot">No matching records. Try another filter or run anomaly analysis.</p>}<p className="table-foot">Preview shows the first 100 rows. Downloads query the latest database state and include all matching rows in your scope.</p></section>
+}

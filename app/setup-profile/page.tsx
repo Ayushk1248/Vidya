@@ -17,9 +17,6 @@ export default function SetupProfilePage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [linkedProviders, setLinkedProviders] = useState<string[]>([])
 
-  useEffect(() => {
-    checkAndSetup()
-  }, [])
 
   async function checkAndSetup() {
     try {
@@ -73,6 +70,10 @@ export default function SetupProfilePage() {
       setTimeout(() => router.push('/login'), 2000)
     }
   }
+
+  useEffect(() => {
+    queueMicrotask(() => { void checkAndSetup() })
+  }, [])
 
   async function handleSetupProfile() {
     setError('')
@@ -202,7 +203,7 @@ export default function SetupProfilePage() {
                 required
                 className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-[#142b49] outline-none placeholder:text-slate-500 focus:border-teal-600"
               />
-              <p className="mt-1 text-xs text-slate-500">You'll be able to sign in with email + password or Google</p>
+              <p className="mt-1 text-xs text-slate-500">You&apos;ll be able to sign in with email + password or Google</p>
             </div>
 
             <div>

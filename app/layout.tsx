@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import {LanguageProvider} from '@/components/language'
 
 export const metadata: Metadata = {
   title: 'VIDYA | SIH26263',
@@ -14,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        {children}
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   )

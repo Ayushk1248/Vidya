@@ -1,8 +1,8 @@
 import { createBrowserClient } from '@supabase/ssr'
+import { supabaseConfiguration } from '@/lib/auth/config'
 
 export function createSupabaseBrowserClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const { url, key: anonKey } = supabaseConfiguration()
 
   if (!url || !anonKey) {
     return null

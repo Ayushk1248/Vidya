@@ -1,0 +1,11 @@
+import {appendFileSync,readFileSync,existsSync} from 'node:fs';
+import {spawnSync} from 'node:child_process';
+if(!existsSync('.env.local'))spawnSync(process.execPath,['scripts/init.mjs'],{stdio:'inherit'});
+process.loadEnvFile('.env.local');
+const {db}=await import('../lib/platform/db.mjs');
+const {ensureDemoAccounts}=await import('../lib/platform/demo.mjs');
+const result=spawnSync(process.execPath,['--env-file=.env.local','scripts/seed.mjs'],{stdio:'inherit'});if(result.status!==0)process.exit(result.status||1);
+ensureDemoAccounts();
+db().prepare("UPDATE validation_rules SET severity=CASE WHEN code IN('V04','V11','V14') THEN 'warning' WHEN code IN('V07','V08','V09') THEN 'critical' WHEN code='V13' THEN 'info' ELSE 'error' END").run();
+if(!/^VIDYA_DEMO_MODE=/m.test(readFileSync('.env.local','utf8')))appendFileSync('.env.local','\nVIDYA_DEMO_MODE=1\n');
+console.log('Local synthetic demonstration ready. Start npm run dev and open /demo.');

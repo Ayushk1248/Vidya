@@ -49,9 +49,9 @@ Student STU00001 uses mock APAAR `990000000001`. After its account is approved, 
 
 The dashboard's APAAR format metric does not imply registry confirmation. Capacity indicators are SQL comparisons, not the full V01â€“V14 engine or ML risk scores. Seeded signed-off/edit flags are historical synthetic fixtures, not live sign-off evidence.
 
-## Still to build
+## Local demonstration and plan implementation
 
-Bulk Excel/CSV upload, background parsing, Python validation adapter and V01â€“V14 engine, fix-in-place and Head sign-off, immutable record versions, nightly duplicates, India map/submission tracker, Isolation Forest/Anomaly Centre, Ed25519/QR/public checks, certificates, PDF/XLSX reports, full audit hardening and MFA/OTP. English/Hindi toggle is also pending.
+See [the current plan implementation and demo guide](docs/PLAN_IMPLEMENTATION.md) for implemented workflows, the eight-role demonstration, testing and external service requirements. Real provider credentials, official registry authorization, national-scale infrastructure and full technical-copy translation remain external setup or production work.
 
 ## Run or restart locally
 

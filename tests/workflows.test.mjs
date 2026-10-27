@@ -87,7 +87,8 @@ test('workflow audit events form a verifiable hash chain',()=>{
 });
 test('owner transfer requires the original verified email and matching project, and runs once',async()=>{
  const {migrateVerifiedOwner}=await import('../lib/platform/owner-migration.mjs');
- const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
+ const previousUrl=process.env.NEXT_PUBLIC_SUPABASE_URL;
+ const url=previousUrl||'https://test-project.example.invalid';process.env.NEXT_PUBLIC_SUPABASE_URL=url;
  d.prepare("INSERT INTO role_assignments(user_id,role) VALUES('old-owner','aicte_admin')").run();
  d.prepare('INSERT INTO owner_migrations(old_user_id,project_url,email_cipher) VALUES(?,?,?)').run('old-owner',url,encrypt('owner@example.invalid'));
  const owner={id:'new-owner',email:'owner@example.invalid',email_confirmed_at:'2026-10-25T00:00:00Z'};
@@ -99,4 +100,5 @@ test('owner transfer requires the original verified email and matching project, 
  assert.equal(migrateVerifiedOwner(owner),true);
  assert.equal(actorFor('new-owner').role,'aicte_admin');assert.equal(actorFor('old-owner'),undefined);
  assert.equal(migrateVerifiedOwner(owner),false);
+ if(previousUrl===undefined)delete process.env.NEXT_PUBLIC_SUPABASE_URL;else process.env.NEXT_PUBLIC_SUPABASE_URL=previousUrl;
 });

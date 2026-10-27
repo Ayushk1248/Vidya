@@ -1,4 +1,5 @@
 'use client'
+import {Label} from '@/components/language'
 
 import { useState } from 'react'
 import { LogOut } from 'lucide-react'
@@ -47,9 +48,7 @@ export function SignOutButton() {
               <button
                 onClick={handleSignOut}
                 className="rounded-lg bg-[#142b49] px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
-              >
-                Sign Out
-              </button>
+              ><Label text="Sign Out"/></button>
             </div>
           </div>
         </div>

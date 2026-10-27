@@ -7,7 +7,7 @@ import type {registrationData} from '@/lib/platform/workflows.mjs'
 type Data=ReturnType<typeof registrationData>
 export function OnboardingForm({data}:{data:Data}){
  const router=useRouter();const [role,setRole]=useState('institution_operator'),[busy,setBusy]=useState(false),[error,setError]=useState('')
- useEffect(()=>{const saved=localStorage.getItem('vidya.requestedRole');if(saved&&Object.hasOwn(roles,saved))setRole(saved)},[])
+ useEffect(()=>{queueMicrotask(()=>{const saved=localStorage.getItem('vidya.requestedRole');if(saved&&Object.hasOwn(roles,saved))setRole(saved)})},[])
  const pending=data.requests.find(r=>r.status==='pending');const last=data.requests[0]
  async function submit(event:React.FormEvent<HTMLFormElement>){event.preventDefault();setBusy(true);setError('');const input=Object.fromEntries(new FormData(event.currentTarget))
  try{const res=await fetch('/api/platform/access',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...input,role,action:'request'})});const result=await res.json();if(!res.ok)throw new Error(result.error);router.refresh()}catch(e){setError(e instanceof Error?e.message:'Request failed.')}finally{setBusy(false)}}

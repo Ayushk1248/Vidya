@@ -1,0 +1,1 @@
+export function requestOrigin(request:Request){const url=new URL(request.url),host=request.headers.get('host');if(!host)return url.origin;const origin=new URL(url.protocol+'//'+host);if(origin.host!==host||origin.username||origin.password)throw new Error('Invalid request host');return origin.origin}

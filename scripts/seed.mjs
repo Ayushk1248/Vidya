@@ -64,7 +64,7 @@ try {
     }
   }
   const rule=insert('validation_rules','code,title,severity,configuration');
-  rules.forEach((title,i)=>rule.run(`V${String(i+1).padStart(2,'0')}`,title,i===13?'warning':'error',JSON.stringify(i===3||i===13?{name_threshold:85}:{})));
+  rules.forEach((title,i)=>rule.run(`V${String(i+1).padStart(2,'0')}`,title,[3,10,13].includes(i)?'warning':[6,7,8].includes(i)?'critical':i===12?'info':'error',JSON.stringify(i===3||i===13?{name_threshold:85}:{})));
   const fixture=insert('seed_fixtures','code,description,references_json');
   const refs=[['STU00201'],['STU00202'],['STU00203'],['STU00204','STU00205'],['STU00206','STU00207'],['STU00206','STU00207'],
     ['STU00251','STU00301'],['INST005-P1'],['INST006-P1'],['STU00208'],['STU00211'],['INST006-P3'],['STU00212'],['STU00209','STU00210']];

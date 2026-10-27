@@ -1,7 +1,4 @@
 {
   "lib/auth/supabase-auth.ts": "097a61527009577d60512a2f6d106e88ea82155b74241f6f9e7bc1da690b046d",
-  "lib/supabase/server.ts": "d6dc386b488942dd8890ed1dc05d7c9fbfbd6e11257adabe5aa83477ea0c7860",
-  "lib/supabase/client.ts": "6b427521f3ff3c71ff4f83803c8198daf1fb5bb4e505a21b1cef5aabe9d5f683",
-  "components/delete-account-button.tsx": "4230c5539d4c2dda3141830dea7c9d7740f4fe9e81d253b5dcd835f293c00031",
-  "app/api/auth/delete-account/route.ts": "1c62c42b7e586f3559fe83006c3adcfe8aa4b5b9eeef3adb32aec21114e61a54"
+  "components/delete-account-button.tsx": "4230c5539d4c2dda3141830dea7c9d7740f4fe9e81d253b5dcd835f293c00031"
 }

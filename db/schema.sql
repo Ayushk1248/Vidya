@@ -30,14 +30,14 @@ CREATE INDEX IF NOT EXISTS enrolments_student ON enrolments(student_id);
 CREATE INDEX IF NOT EXISTS students_apaar ON students(apaar);
 CREATE TABLE IF NOT EXISTS role_assignments(
  user_id TEXT PRIMARY KEY,
- role TEXT NOT NULL CHECK(role IN('institution_operator','institution_head','regional_officer','aicte_admin','student','external_verifier')),
+ role TEXT NOT NULL CHECK(role IN('institution_operator','institution_head','regional_officer','aicte_admin','student','external_verifier','awarding_body','system_admin')),
  institution_id TEXT REFERENCES institutions(id), region TEXT, student_id TEXT REFERENCES students(id),
- CHECK((role IN('institution_operator','institution_head') AND institution_id IS NOT NULL AND region IS NULL AND student_id IS NULL)
+ CHECK((role IN('institution_operator','institution_head','awarding_body') AND institution_id IS NOT NULL AND region IS NULL AND student_id IS NULL)
  OR (role='regional_officer' AND region IS NOT NULL AND institution_id IS NULL AND student_id IS NULL)
  OR (role='student' AND student_id IS NOT NULL AND institution_id IS NULL AND region IS NULL)
- OR (role IN('aicte_admin','external_verifier') AND institution_id IS NULL AND region IS NULL AND student_id IS NULL)));
+ OR (role IN('aicte_admin','external_verifier','system_admin') AND institution_id IS NULL AND region IS NULL AND student_id IS NULL)));
 CREATE TABLE IF NOT EXISTS validation_rules(
- code TEXT PRIMARY KEY, title TEXT NOT NULL, severity TEXT NOT NULL CHECK(severity IN('error','warning')),
+ code TEXT PRIMARY KEY, title TEXT NOT NULL, severity TEXT NOT NULL CHECK(severity IN('error','warning','critical','info')),
  enabled INTEGER NOT NULL DEFAULT 1 CHECK(enabled IN(0,1)), configuration TEXT NOT NULL DEFAULT '{}');
 CREATE TABLE IF NOT EXISTS upload_batches(
  id TEXT PRIMARY KEY, institution_id TEXT NOT NULL REFERENCES institutions(id), uploaded_by TEXT NOT NULL,
@@ -105,3 +105,28 @@ CREATE TABLE IF NOT EXISTS certificate_keys(id TEXT PRIMARY KEY,public_key TEXT 
 CREATE TABLE IF NOT EXISTS certificate_artifacts(certificate_id TEXT PRIMARY KEY REFERENCES signed_records(id),pdf_cipher TEXT NOT NULL,pdf_sha256 TEXT NOT NULL,verify_url TEXT NOT NULL,issued_by TEXT NOT NULL,revoked_by TEXT,revocation_reason TEXT);
 CREATE UNIQUE INDEX IF NOT EXISTS one_certificate_per_record_version ON signed_records(enrolment_id,version);
 INSERT OR IGNORE INTO schema_versions(version) VALUES(5);
+
+CREATE TABLE IF NOT EXISTS student_details(
+ enrolment_id TEXT PRIMARY KEY REFERENCES enrolments(id),gender TEXT NOT NULL DEFAULT 'U',
+ year_of_study INTEGER NOT NULL DEFAULT 1 CHECK(year_of_study BETWEEN 1 AND 5),admission_mode TEXT NOT NULL DEFAULT 'Regular',
+ social_category TEXT NOT NULL DEFAULT 'GEN',nri_status TEXT NOT NULL DEFAULT 'N',oci_status TEXT NOT NULL DEFAULT 'N',fn_status TEXT NOT NULL DEFAULT 'N',
+ enrolment_status TEXT NOT NULL DEFAULT 'Active',status_date TEXT NOT NULL DEFAULT '',apaar_pending_reason TEXT NOT NULL DEFAULT '',
+ apaar_pending_deadline TEXT NOT NULL DEFAULT '',parent_name_cipher TEXT NOT NULL DEFAULT '');
+CREATE TABLE IF NOT EXISTS program_windows(program_id TEXT NOT NULL REFERENCES programs(id),academic_year INTEGER NOT NULL,admission_start TEXT NOT NULL,admission_end TEXT NOT NULL,PRIMARY KEY(program_id,academic_year));
+CREATE TABLE IF NOT EXISTS notifications(id TEXT PRIMARY KEY,user_id TEXT NOT NULL,kind TEXT NOT NULL,title TEXT NOT NULL,body_cipher TEXT NOT NULL,created_at TEXT NOT NULL,read_at TEXT,delivery TEXT NOT NULL DEFAULT 'in_app');
+CREATE TABLE IF NOT EXISTS officer_cases(id TEXT PRIMARY KEY,institution_id TEXT NOT NULL REFERENCES institutions(id),enrolment_id TEXT REFERENCES enrolments(id),rule_code TEXT NOT NULL,summary TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'open',response TEXT,review_note TEXT,created_by TEXT NOT NULL,created_at TEXT NOT NULL,updated_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS integration_clients(id TEXT PRIMARY KEY,institution_id TEXT NOT NULL REFERENCES institutions(id),name TEXT NOT NULL,secret_hash TEXT NOT NULL,created_by TEXT NOT NULL,created_at TEXT NOT NULL,revoked_at TEXT,last_used TEXT);
+CREATE TABLE IF NOT EXISTS webhooks(id TEXT PRIMARY KEY,institution_id TEXT NOT NULL REFERENCES institutions(id),url TEXT NOT NULL,secret_cipher TEXT NOT NULL,created_by TEXT NOT NULL,created_at TEXT NOT NULL,active INTEGER NOT NULL DEFAULT 1);
+CREATE TABLE IF NOT EXISTS delivery_jobs(id TEXT PRIMARY KEY,kind TEXT NOT NULL,payload_cipher TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'queued',attempts INTEGER NOT NULL DEFAULT 0,next_at TEXT NOT NULL,created_at TEXT NOT NULL,error TEXT);
+CREATE TABLE IF NOT EXISTS mfa_secrets(user_id TEXT PRIMARY KEY,secret_cipher TEXT NOT NULL,enabled INTEGER NOT NULL DEFAULT 0,last_counter INTEGER NOT NULL DEFAULT -1,recovery_hashes TEXT NOT NULL DEFAULT '[]');
+CREATE TABLE IF NOT EXISTS audit_checkpoints(id TEXT PRIMARY KEY,sequence INTEGER NOT NULL,event_hash TEXT NOT NULL,signature TEXT NOT NULL,created_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS report_schedules(id TEXT PRIMARY KEY,user_id TEXT NOT NULL,report_type TEXT NOT NULL,academic_year INTEGER NOT NULL,next_at TEXT NOT NULL,active INTEGER NOT NULL DEFAULT 1);
+CREATE TABLE IF NOT EXISTS record_queries(id TEXT PRIMARY KEY,student_id TEXT NOT NULL,created_by TEXT NOT NULL,description TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'open',response TEXT,created_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS retention_policy(id INTEGER PRIMARY KEY CHECK(id=1),years INTEGER NOT NULL DEFAULT 7,description TEXT NOT NULL);
+INSERT OR IGNORE INTO retention_policy VALUES(1,7,'Synthetic prototype policy: retain academic versions for seven years; archive withdrawn, transferred and graduated records. No automatic deletion.');
+
+CREATE TABLE IF NOT EXISTS apaar_checks(enrolment_id TEXT PRIMARY KEY REFERENCES enrolments(id),status TEXT NOT NULL,name_score REAL NOT NULL,dob_match INTEGER NOT NULL,checked_at TEXT NOT NULL);
+
+CREATE UNIQUE INDEX IF NOT EXISTS report_schedule_identity ON report_schedules(user_id,report_type,academic_year);
+CREATE TABLE IF NOT EXISTS notification_templates(kind TEXT PRIMARY KEY,title TEXT NOT NULL,body TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS finding_justifications(batch_id TEXT NOT NULL REFERENCES upload_batches(id),row_number INTEGER NOT NULL,rule_code TEXT NOT NULL,version INTEGER NOT NULL,reason_cipher TEXT NOT NULL,actor_id TEXT NOT NULL,created_at TEXT NOT NULL,PRIMARY KEY(batch_id,row_number,rule_code,version));
