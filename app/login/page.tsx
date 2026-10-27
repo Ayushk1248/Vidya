@@ -1,5 +1,6 @@
 'use client'
 
+import {Skeleton} from '@/components/presentation'
 import { PortalPicker } from '@/components/portal-picker'
 import { GoogleSignIn } from '@/components/google-sign-in'
 import { PasswordInput } from '@/components/password-input'
@@ -13,7 +14,7 @@ export default function LoginPage() {
   return (
     <Suspense fallback={
       <div className="flex min-h-0 items-center justify-center bg-white">
-        <div className="size-8 animate-spin rounded-full border-4 border-slate-200 border-t-teal-600" />
+        <Skeleton label="Loading sign-in options"/>
       </div>
     }>
       <LoginContent />
