@@ -1,4 +1,5 @@
-export const hindi:Record<string,string>={
+import uiHindi from './ui-hindi.json'
+const existingHindi:Record<string,string>={
  'Map & Overview':'मानचित्र और अवलोकन','Batch Review':'बैच समीक्षा',
  'Overview':'अवलोकन','Institutions':'संस्थान','My institution':'मेरा संस्थान','Upload Centre':'अपलोड केंद्र','Anomaly Centre':'विसंगति केंद्र','Student records':'छात्र रिकॉर्ड','My academic records':'मेरे शैक्षणिक रिकॉर्ड','Certificates':'प्रमाणपत्र','My certificates':'मेरे प्रमाणपत्र','Access management':'पहुँच प्रबंधन','Consent centre':'सहमति केंद्र','Verification requests':'सत्यापन अनुरोध','Activity log':'गतिविधि लॉग','Reports':'रिपोर्ट','Notifications':'सूचनाएँ','Cases & queries':'मामले और प्रश्न','Security':'सुरक्षा','Integrations':'एकीकरण','System administration':'सिस्टम प्रशासन','Switch demo role':'डेमो भूमिका बदलें',
  'Academic year':'शैक्षणिक वर्ष','Apply':'लागू करें','Apply filters':'फ़िल्टर लागू करें','Clear':'साफ़ करें','Save':'सहेजें','Cancel':'रद्द करें','Previous':'पिछला','Next':'अगला','Sign in':'साइन इन','Sign Out':'साइन आउट','Create your account':'अपना खाता बनाएँ','Explore demo':'डेमो देखें','Who it’s for':'किसके लिए','How it works':'यह कैसे काम करता है',
@@ -11,3 +12,4 @@ export const hindi:Record<string,string>={
  'Student ID':'छात्र आईडी','Student name':'छात्र का नाम','Date of birth':'जन्म तिथि','Approved program code':'स्वीकृत कार्यक्रम कोड','Admission date':'प्रवेश तिथि','Status date':'स्थिति की तिथि','Parent name':'अभिभावक का नाम','Mobile':'मोबाइल','Email':'ईमेल','Correction reason':'सुधार का कारण','Institution ID':'संस्थान आईडी','Client name':'क्लाइंट नाम','Question':'प्रश्न','Decision':'निर्णय','Response':'उत्तर','Officer note':'अधिकारी की टिप्पणी','Institution response':'संस्थान का उत्तर','Region':'क्षेत्र','State':'राज्य','Institution':'संस्थान','Program':'कार्यक्रम',
  'Your information stays with you.':'आपकी जानकारी आपके नियंत्रण में।','No requests yet.':'अभी कोई अनुरोध नहीं।','Create a verification request':'सत्यापन अनुरोध बनाएँ','View my academic records':'मेरे शैक्षणिक रिकॉर्ड देखें','You’re all caught up.':'आपकी सभी सूचनाएँ अद्यतन हैं।','Workflow notifications will appear here as you work.':'कार्यप्रवाह की सूचनाएँ यहाँ दिखाई देंगी।'
 }
+export const hindi:Record<string,string>={...existingHindi,...uiHindi}

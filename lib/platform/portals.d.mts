@@ -1,0 +1,12 @@
+export type PortalCategory='students'|'institutions'|'aicte'|'verifiers';
+export const portals:Record<PortalCategory,{label:string;roles:string[];description:string}>;
+export function validPortal(value:unknown):PortalCategory|null;
+export function rolePortal(role:string):PortalCategory|null;
+export function portalPath(path:string,category:string|null|undefined):string;
+export function parsePortalPath(path:string):{category:PortalCategory;path:string}|null;
+export function demoCookie(category:string|null|undefined):string;
+export function demoIdentity(category:string|null|undefined,data:{id?:string}|null):string|null;
+export function requestPortal(url:string,referer:string|null):PortalCategory|null;
+export function legacyPortal(path:string):PortalCategory|null;
+export function portalApiPath(path:string,category:string|null|undefined):string;
+export function clientPortalPath(path:string):string;

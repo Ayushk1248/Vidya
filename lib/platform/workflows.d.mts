@@ -1,5 +1,5 @@
 import type {Actor} from './repository.mjs';
-export type AccessRequest={id:string;user_id:string;role:string;institution_id:string|null;region:string|null;student_id:string|null;organisation:string;designation:string;reason:string;status:string;created_at:string;review_note:string|null;display_name?:string;email?:string;institution_name?:string};
+export type AccessRequest={id:string;user_id:string;role:string;institution_id:string|null;region:string|null;student_id:string|null;organisation:string;designation:string;reason:string;status:string;created_at:string;review_note:string|null;display_name?:string;email?:string;institution_name?:string;approval_issues?:string[]};
 export type DirectoryRow={id:string;name:string;region:string;state:string;institution_type:string;programs:number;intake:number;enrolments:number;within_count:number;signed_count:number};
 export type Overview={year:number;directory:DirectoryRow[];summary:{total:number;apaar_count:number;supernumerary:number;signed_count:number;edits:number};trend:{year:number;count:number}[];capacity:{id:string;name:string;institution_id:string;institution_name:string;intake:number;enrolled:number}[];pending:number};
 export type Consent={id:string;purpose:string;requested_fields:string[];approved_fields:string[];status:string;created_at:string;expires_at:string;organisation:string;requester:string};

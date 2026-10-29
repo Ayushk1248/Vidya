@@ -19,7 +19,7 @@ const oversight: WorkspaceLink[] = [
 const navigation: Record<string, WorkspaceLink[]> = {
   institution_operator: [upload],
   institution_head: [{ ...upload, label: 'Batch Review' }, certificates],
-  aicte_admin: oversight,
+  aicte_admin: [...oversight, { id: 'access', href: '/access', label: 'Access management', icon: 'admin' }],
   regional_officer: oversight,
   external_verifier: [{ id: 'verification', href: '/verification', label: 'Verification requests', icon: 'verification' }],
   student: [{ id: 'verification', href: '/verification', label: 'Consent centre', icon: 'verification' }],
