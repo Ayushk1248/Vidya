@@ -2,7 +2,7 @@
 import {Label,LocalizedInput,LocalizedButton,LocalizedAnchor} from '@/components/language'
 
 
-import { PortalPicker } from '@/components/portal-picker'
+import {Skeleton} from '@/components/presentation'
 import { GoogleSignIn } from '@/components/google-sign-in'
 import { PasswordInput } from '@/components/password-input'
 
@@ -15,7 +15,7 @@ export default function LoginPage() {
   return (
     <Suspense fallback={
       <div className="flex min-h-0 items-center justify-center bg-white">
-        <div className="size-8 animate-spin rounded-full border-4 border-slate-200 border-t-teal-600" />
+        <Skeleton label="Loading sign-in options"/>
       </div>
     }>
       <LoginContent />
@@ -74,7 +74,7 @@ function LoginContent() {
         <h1 className="mb-2 text-center text-2xl font-bold text-[#142b49]"><Label text={"Welcome back"}/></h1>
         <p className="mb-6 text-center text-sm text-slate-600"><Label text={"Sign in to your VIDYA workspace"}/></p>
 
-        <PortalPicker />
+
 
         {error && (
           <p role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-center text-sm text-red-700">

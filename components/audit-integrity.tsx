@@ -1,10 +1,57 @@
 "use client";
 import {Label,LocalizedButton} from '@/components/language'
 
+import {Skeleton} from './presentation';
+import {Link2,Unlink,ShieldCheck} from 'lucide-react';
 import {useState} from 'react';
 import type {IntegrityResult} from '@/lib/platform/audit-integrity.mjs';
 export function AuditIntegrity(){
  const [result,setResult]=useState<IntegrityResult|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState('');
  async function check(){setBusy(true);setError('');setResult(null);try{const response=await fetch('/api/platform/audit/integrity',{cache:'no-store'});const data=await response.json();if(!response.ok)throw new Error(data.error||'Unable to check audit integrity.');setResult(data)}catch(e){setError(e instanceof Error?e.message:'Unable to check audit integrity.')}finally{setBusy(false)}}
- return <section className="card" style={{margin:'24px 0'}} aria-label="Audit integrity"><div className="table-title"><div><h2><Label text={"Audit-chain integrity"}/></h2><p><Label text={"Check every stored event, including those outside the recent activity list."}/></p></div><LocalizedButton className="button secondary" disabled={busy} onClick={check}><Label text={busy?'Checking…':'Check integrity'}/></LocalizedButton></div><div aria-live="polite" aria-busy={busy}>{error&&<p role="alert"><Label text={error}/></p>}{result&&<><p><strong><Label text={result.status==='valid'?'Chain intact':result.status==='empty'?'No events to check':'Integrity check failed'}/></strong><Label text={result.status==='broken'?` · First broken event #${result.first_broken_sequence}. ${result.reason}`:` · ${result.checked} events checked.`}/></p><p className="small muted"><Label text={"Checked "}/><Label text={new Date(result.checked_at).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})}/><Label text={"IST"}/><Label text={result.status==='broken'?` · ${result.checked} preceding events verified out of ${result.total} stored events.`:''}/></p></>}</div><p className="small muted"><Label text={"This checks stored hashes and links; it does not repair records. Without an independently saved checkpoint, it cannot prove that the end of the log was not deleted or that the entire chain was not rewritten."}/></p></section>
+ return <section className="card" style={{margin:'24px 0'}} aria-label="Audit integrity">
+<div className="table-title">
+<div>
+<h2>
+<Label text={"Audit-chain integrity"}/>
+</h2>
+<p>
+<Label text={"Check every stored event, including those outside the recent activity list."}/>
+</p>
+</div>
+<LocalizedButton className="button secondary" disabled={busy} onClick={check}>
+<Label text={busy?'Checking…':'Check integrity'}/>
+</LocalizedButton>
+</div>
+<div aria-live="polite" aria-busy={busy}>{busy&&<Skeleton rows={2} label="Verifying the stored audit chain"/>}{error&&<p role="alert"><Label text={error}/></p>}{result&&<>
+<div className={`audit-chain-visual ${result.status}`} aria-label={`Audit chain: ${result.status}`}>
+<div className="chain-result-icon">{result.status==='valid'?<ShieldCheck size={24}/>:result.status==='broken'?<Unlink size={24}/>:<Link2 size={24}/>}</div>
+<div className="chain-blocks" role="list" aria-label="Illustration of checked links">{Array.from({length:Math.min(5,result.checked)},(_,i)=>
+<div className="chain-block" role="listitem" key={i}>
+<Link2 size={15}/>
+<span><Label text={"Checked link"}/></span>
+<strong><Label text={i+1}/></strong>
+</div>)}{result.status==='broken'&&<div className="chain-block broken-link" role="listitem">
+<Unlink size={15}/>
+<span><Label text={"Mismatch"}/></span>
+<strong><Label text={result.first_broken_sequence?'#'+result.first_broken_sequence:'Checkpoint'}/></strong>
+</div>}</div>
+</div>
+<p className="small muted"><Label text={"Link illustration shows up to five verified positions. Event hashes are not supplied by this check endpoint."}/></p>
+<p>
+<strong>
+<Label text={result.status==='valid'?'Chain intact':result.status==='empty'?'No events to check':'Integrity check failed'}/>
+</strong>
+<Label text={result.status==='broken'?` · First broken event #${result.first_broken_sequence}. ${result.reason}`:` · ${result.checked} events checked.`}/>
+</p>
+<p className="small muted">
+<Label text={"Checked "}/>
+<Label text={new Date(result.checked_at).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})}/>
+<Label text={"IST"}/>
+<Label text={result.status==='broken'?` · ${result.checked} preceding events verified out of ${result.total} stored events.`:''}/>
+</p>
+</>}</div>
+<p className="small muted">
+<Label text={"This checks stored hashes and links; it does not repair records. Without an independently saved checkpoint, it cannot prove that the end of the log was not deleted or that the entire chain was not rewritten."}/>
+</p>
+</section>
 }

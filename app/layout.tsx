@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import './premium.css'
+import {GeistSans} from 'geist/font/sans'
+import {PresentationProvider} from '@/components/presentation'
 import './ui-polish.css'
 import {LanguageProvider} from '@/components/language'
 
@@ -15,8 +18,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
-        <LanguageProvider>{children}</LanguageProvider>
+      <body className={`${GeistSans.variable} antialiased`}>
+        <LanguageProvider>
+<PresentationProvider>{children}</PresentationProvider>
+</LanguageProvider>
       </body>
     </html>
   )

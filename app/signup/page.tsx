@@ -3,7 +3,6 @@ import {LocalizedInput,LocalizedButton,LocalizedAnchor} from '@/components/langu
 
 import {Label} from '@/components/language'
 
-import { PortalPicker } from '@/components/portal-picker'
 import { GoogleSignIn } from '@/components/google-sign-in'
 import { PasswordInput } from '@/components/password-input'
 
@@ -90,10 +89,12 @@ export default function SignupPage() {
   return (
     <div className="flex min-h-0 items-center justify-center bg-white p-4">
       <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm ">
-        <h1 className="mb-2 text-center text-2xl font-bold text-[#142b49]"><Label text="Create your account"/></h1>
-        <p className="mb-6 text-center text-sm text-slate-600"><Label text={"Create your VIDYA account. An administrator will assign your role and data access."}/></p>
+        <h1 className="mb-2 text-center text-2xl font-bold text-[#142b49]">
+<Label text="Create your account"/>
+</h1>
+        <p className="mb-6 text-center text-sm text-slate-600"><Label text={"Create your account first. After signing in, request your role and link your institution or synthetic student record."}/></p>
 
-        <PortalPicker />
+
 
         {error && (
           <p role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-center text-sm text-red-700">
@@ -112,43 +113,66 @@ export default function SignupPage() {
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200"></div>
+              <div className="w-full border-t border-slate-200">
+</div>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-slate-600"><Label text={"Or"}/></span>
+              <span className="bg-white px-2 text-slate-600">
+<Label text={"Or"}/>
+</span>
             </div>
           </div>
 
           <div className="space-y-3">
-            <label className="auth-field"><span><Label text={"Display name"}/></span><LocalizedInput aria-label="Display name" autoComplete="nickname"
+            <label className="auth-field">
+<span>
+<Label text={"Display name"}/>
+</span>
+<LocalizedInput aria-label="Display name" autoComplete="nickname"
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Display name"
               className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-[#142b49] outline-none placeholder:text-slate-500 focus:border-teal-600"
-            /></label>
-            <label className="auth-field"><span><Label text={"Email address"}/></span><LocalizedInput aria-label="Email address" autoComplete="email"
+            />
+</label>
+            <label className="auth-field">
+<span>
+<Label text={"Email address"}/>
+</span>
+<LocalizedInput aria-label="Email address" autoComplete="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email address"
               className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-[#142b49] outline-none placeholder:text-slate-500 focus:border-teal-600"
-            /></label>
-            <label className="auth-field"><span><Label text={"Password"}/></span><PasswordInput aria-label="Password" autoComplete="new-password"
+            />
+</label>
+            <label className="auth-field">
+<span>
+<Label text={"Password"}/>
+</span>
+<PasswordInput aria-label="Password" autoComplete="new-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password (min 6 characters)"
               className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-[#142b49] outline-none placeholder:text-slate-500 focus:border-teal-600"
-            /></label>
-            <label className="auth-field"><span><Label text={"Confirm password"}/></span><PasswordInput aria-label="Confirm password" autoComplete="new-password"
+            />
+</label>
+            <label className="auth-field">
+<span>
+<Label text={"Confirm password"}/>
+</span>
+<PasswordInput aria-label="Confirm password" autoComplete="new-password"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm password"
               className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-[#142b49] outline-none placeholder:text-slate-500 focus:border-teal-600"
               onKeyDown={(e) => e.key === 'Enter' && handleEmailSignup()}
-            /></label>
+            />
+</label>
             <LocalizedButton
               type="button"
               onClick={handleEmailSignup}
@@ -159,8 +183,12 @@ export default function SignupPage() {
             </LocalizedButton>
           </div>
 
-          <p className="text-center text-sm text-slate-600"><Label text={"Already have an account?"}/><Label text={' '}/>
-            <LocalizedAnchor href="/login" className="text-teal-700 hover:text-teal-700 transition"><Label text={"Sign In"}/></LocalizedAnchor>
+          <p className="text-center text-sm text-slate-600">
+<Label text={"Already have an account?"}/>
+<Label text={' '}/>
+            <LocalizedAnchor href="/login" className="text-teal-700 hover:text-teal-700 transition">
+<Label text={"Sign In"}/>
+</LocalizedAnchor>
           </p>
         </div>
       </div>

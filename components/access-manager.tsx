@@ -1,17 +1,210 @@
 'use client'
+import {LocalizedSelect,LocalizedInput,LocalizedTextarea} from '@/components/language'
+
 import {Label,LocalizedButton} from '@/components/language'
 
 import {useState} from 'react'
 import {AccessDecisionForm} from './access-decision-form'
 import {useRouter} from 'next/navigation'
-import {roles} from '@/lib/platform/access.mjs'
+import {roles,administratorAssignedRoles} from '@/lib/platform/access.mjs'
 import type {accessQueue,AccessRequest} from '@/lib/platform/workflows.mjs'
 export function AccessManager({data,currentUserId,reviewerRole}:{data:ReturnType<typeof accessQueue>;currentUserId:string;reviewerRole:string}){
  const [tab,setTab]=useState('pending'),[active,setActive]=useState<AccessRequest|null>(null),[member,setMember]=useState<string|null>(null),[note,setNote]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState(''),[success,setSuccess]=useState('');const router=useRouter()
- async function send(body:Record<string,unknown>){setBusy(true);setError('');setSuccess('');try{const res=await fetch('/api/platform/access',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const result=await res.json();if(!res.ok)throw new Error(result.error);setActive(null);setMember(null);setNote('');setSuccess(body.action==='revoke'?'Access revoked. The account no longer has workspace access.':body.decision==='approved'?'Access approved. The applicant can open their workspace.':'Request rejected. The applicant can see your note and submit a corrected request.');if(body.action==='review')setTab('history');router.refresh()}catch(e){setError(e instanceof Error?e.message:'Action failed.')}finally{setBusy(false)}}
+ async function send(body:Record<string,unknown>){setBusy(true);setError('');setSuccess('');try{const res=await fetch('/api/platform/access',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const result=await res.json();if(!res.ok)throw new Error(result.error);setActive(null);setMember(null);setNote('');setSuccess(body.action==='assign_staff'?'Staff access approved. The account can open its assigned workspace.':body.action==='revoke'?'Access revoked. The account no longer has workspace access.':body.decision==='approved'?'Access approved. The applicant can open their workspace.':'Request rejected. The applicant can see your note and submit a corrected request.');if(body.action==='review')setTab('history');router.refresh()}catch(e){setError(e instanceof Error?e.message:'Action failed.')}finally{setBusy(false)}}
  const rows=data.requests.filter(r=>tab==='pending'?r.status==='pending':r.status!=='pending')
- return <>{success&&<p className="feedback-info" role="status"><Label text={success}/></p>}<div className="tab-bar">{[['pending',`Pending (${data.requests.filter(r=>r.status==='pending').length})`],['history','Review history'],['members',`Active accounts (${data.members.length})`]].map(([id,label])=><LocalizedButton key={id} className={tab===id?'selected':''} onClick={()=>setTab(id)}><Label text={label}/></LocalizedButton>)}<LocalizedButton className="refresh-button" onClick={()=>router.refresh()}><Label text={"Refresh"}/></LocalizedButton></div>
- {tab==='members'?<section className="card table-card"><div className="table-scroll"><table><thead><tr><th><Label text={"Account"}/></th><th><Label text={"Role"}/></th><th><Label text={"Scope"}/></th><th></th></tr></thead><tbody>{data.members.map(m=><tr key={m.user_id}><td><strong><Label text={m.display_name}/></strong><small><Label text={m.user_id===currentUserId?'You':m.user_id.slice(0,8)}/></small></td><td><Label text={roles[m.role as keyof typeof roles]}/></td><td><Label text={m.institution_name||m.region||m.student_id||'Role-specific access'}/></td><td>{m.user_id!==currentUserId&&(reviewerRole==='aicte_admin'||m.role==='institution_operator')&&<LocalizedButton className="text-button" onClick={()=>{setMember(m.user_id);setError('');setNote('')}}><Label text={"Revoke access"}/></LocalizedButton>}</td></tr>)}</tbody></table></div></section>:<section className="card table-card"><div className="table-scroll"><table><thead><tr><th><Label text={"Applicant"}/></th><th><Label text={"Requested role"}/></th><th><Label text={"Scope"}/></th><th><Label text={"Status"}/></th><th></th></tr></thead><tbody>{rows.map(r=><tr key={r.id}><td><strong><Label text={r.display_name}/></strong><small><Label text={r.email}/></small><small><Label text={"Reference: "}/><Label text={r.id.slice(0,8).toUpperCase()}/></small></td><td><Label text={roles[r.role as keyof typeof roles]}/><small><Label text={r.designation||r.organisation}/></small></td><td><Label text={r.institution_name||r.region||r.organisation||'National'}/>{r.student_id&&<small><Label text={r.student_id}/></small>}</td><td><span className={`status-pill ${r.status}`}><Label text={r.status}/></span></td><td><LocalizedButton className="text-button" onClick={()=>{setActive(r);setNote('');setError('')}}><Label text={r.status==='pending'?'Review request':'View details'}/> →</LocalizedButton></td></tr>)}</tbody></table></div>{rows.length===0&&<div className="empty-inline"><h3><Label text={tab==='pending'?'You’re up to date.':'No completed reviews yet.'}/></h3><p><Label text={"New registrations appear here when a signed-in user submits an access request."}/></p></div>}</section>}
- {(active||member)&&<div className="modal-backdrop"><section className="review-modal" role="dialog" aria-modal="true" aria-labelledby="review-title"><div className="table-title"><h2 id="review-title"><Label text={member?'Revoke workspace access':'Review access request'}/></h2><LocalizedButton className="text-button" disabled={busy} onClick={()=>{setActive(null);setMember(null)}}><Label text={"Close ✕"}/></LocalizedButton></div><div className="modal-body">{active&&<><h3><Label text={active.display_name}/></h3><p className="muted"><Label text={active.email}/></p><dl className="detail-list"><div><dt><Label text={"Role"}/></dt><dd><Label text={roles[active.role as keyof typeof roles]}/></dd></div><div><dt><Label text={"Institution / region"}/></dt><dd><Label text={active.institution_name||active.region||'—'}/></dd></div>{active.student_id&&<div><dt><Label text={"Student link"}/></dt><dd><Label text={active.student_id}/></dd></div>}<div><dt><Label text={"Reason"}/></dt><dd><Label text={active.reason}/></dd></div></dl><p className="feedback-info"><Label text={"Confirm the applicant’s affiliation before approving. Student links are checked against enrolments. This prototype uses synthetic institution identities."}/></p></>}{member&&<p><Label text={"They will lose access on their next request. Their account and submitted records will remain."}/></p>}
- {active?.status!=='pending'&&active?<p className="feedback-info"><Label text={active.status}/>: <Label text={active.review_note}/></p>:<AccessDecisionForm active={active} member={member} currentUserId={currentUserId} note={note} setNote={setNote} busy={busy} error={error} send={send}/>}</div></section></div>}</>
+ return <>{reviewerRole==='aicte_admin'&&<details className="workspace-disclosure">
+<summary><Label text={"Assign an AICTE or system staff account"}/></summary>
+<div className="disclosure-body">
+<p><Label text={"Only an AICTE administrator can grant these roles. Confirm the person's affiliation and account ID first. The account must already have signed in."}/></p>
+<form className="platform-form" onSubmit={e=>{e.preventDefault();void send({action:'assign_staff',...Object.fromEntries(new FormData(e.currentTarget))})}}>
+<label><Label text={"Registered account"}/><LocalizedSelect name="user_id" required defaultValue="">
+<option value="" disabled><Label text={"Select an unassigned account"}/></option>{data.unassigned.map(u=>
+<option key={u.user_id} value={u.user_id}><Label text={u.display_name}/> · <Label text={u.user_id}/></option>)}</LocalizedSelect>
+</label>
+<label><Label text={"Approved staff role"}/><LocalizedSelect name="role" required>{administratorAssignedRoles.map(id=>
+<option key={id} value={id}><Label text={roles[id as keyof typeof roles]}/></option>)}</LocalizedSelect>
+</label>
+<label><Label text={"Region (required for Regional Officer only)"}/><LocalizedSelect name="region" defaultValue="">
+<option value=""><Label text={"Not regional"}/></option>{data.regions.map(r=>
+<option key={r} value={r}><Label text={r}/></option>)}</LocalizedSelect>
+</label>
+<label><Label text={"Designation"}/><LocalizedInput name="designation" required minLength={3} maxLength={100}/>
+</label>
+<label><Label text={"Approval reason"}/><LocalizedTextarea name="note" required minLength={10} maxLength={1000}/>
+</label>{error&&<p role="alert" className="feedback-error"><Label text={error}/></p>}<LocalizedButton className="button" disabled={busy||!data.unassigned.length}><Label text={busy?'Saving…':'Approve staff assignment'}/></LocalizedButton>
+</form>
+</div>
+</details>}{success&&<p className="feedback-info" role="status">
+<Label text={success}/>
+</p>}<div className="tab-bar">{[['pending',`Pending (${data.requests.filter(r=>r.status==='pending').length})`],['history','Review history'],['members',`Active accounts (${data.members.length})`]].map(([id,label])=>
+<LocalizedButton key={id} className={tab===id?'selected':''} onClick={()=>setTab(id)}>
+<Label text={label}/>
+</LocalizedButton>)}<LocalizedButton className="refresh-button" onClick={()=>router.refresh()}>
+<Label text={"Refresh"}/>
+</LocalizedButton>
+</div>
+ {tab==='members'?<section className="card table-card">
+<div className="table-scroll">
+<table>
+<thead>
+<tr>
+<th>
+<Label text={"Account"}/>
+</th>
+<th>
+<Label text={"Role"}/>
+</th>
+<th>
+<Label text={"Scope"}/>
+</th>
+<th>
+</th>
+</tr>
+</thead>
+<tbody>{data.members.map(m=>
+<tr key={m.user_id}>
+<td>
+<strong>
+<Label text={m.display_name}/>
+</strong>
+<small>
+<Label text={m.user_id===currentUserId?'You':m.user_id.slice(0,8)}/>
+</small>
+</td>
+<td>
+<Label text={roles[m.role as keyof typeof roles]}/>
+</td>
+<td>
+<Label text={m.institution_name||m.region||m.student_id||'Role-specific access'}/>
+</td>
+<td>{m.user_id!==currentUserId&&(reviewerRole==='aicte_admin'||m.role==='institution_operator')&&<LocalizedButton className="text-button" onClick={()=>{setMember(m.user_id);setError('');setNote('')}}>
+<Label text={"Revoke access"}/>
+</LocalizedButton>}</td>
+</tr>)}</tbody>
+</table>
+</div>
+</section>:<section className="card table-card">
+<div className="table-scroll">
+<table>
+<thead>
+<tr>
+<th>
+<Label text={"Applicant"}/>
+</th>
+<th>
+<Label text={"Requested role"}/>
+</th>
+<th>
+<Label text={"Scope"}/>
+</th>
+<th>
+<Label text={"Status"}/>
+</th>
+<th>
+</th>
+</tr>
+</thead>
+<tbody>{rows.map(r=>
+<tr key={r.id}>
+<td>
+<strong>
+<Label text={r.display_name}/>
+</strong>
+<small>
+<Label text={r.email}/>
+</small>
+<small>
+<Label text={"Reference: "}/>
+<Label text={r.id.slice(0,8).toUpperCase()}/>
+</small>
+</td>
+<td>
+<Label text={roles[r.role as keyof typeof roles]}/>
+<small>
+<Label text={r.designation||r.organisation}/>
+</small>
+</td>
+<td>
+<Label text={r.institution_name||r.region||r.organisation||'National'}/>{r.student_id&&<small>
+<Label text={r.student_id}/>
+</small>}</td>
+<td>
+<span className={`status-pill ${r.status}`}>
+<Label text={r.status}/>
+</span>
+</td>
+<td>
+<LocalizedButton className="text-button" onClick={()=>{setActive(r);setNote('');setError('')}}>
+<Label text={r.status==='pending'?'Review request':'View details'}/> →</LocalizedButton>
+</td>
+</tr>)}</tbody>
+</table>
+</div>{rows.length===0&&<div className="empty-inline">
+<h3>
+<Label text={tab==='pending'?'You’re up to date.':'No completed reviews yet.'}/>
+</h3>
+<p>
+<Label text={"New registrations appear here when a signed-in user submits an access request."}/>
+</p>
+</div>}</section>}
+ {(active||member)&&<div className="modal-backdrop">
+<section className="review-modal" role="dialog" aria-modal="true" aria-labelledby="review-title">
+<div className="table-title">
+<h2 id="review-title">
+<Label text={member?'Revoke workspace access':'Review access request'}/>
+</h2>
+<LocalizedButton className="text-button" disabled={busy} onClick={()=>{setActive(null);setMember(null)}}>
+<Label text={"Close ✕"}/>
+</LocalizedButton>
+</div>
+<div className="modal-body">{active&&<>
+<h3>
+<Label text={active.display_name}/>
+</h3>
+<p className="muted">
+<Label text={active.email}/>
+</p>
+<dl className="detail-list">
+<div>
+<dt>
+<Label text={"Role"}/>
+</dt>
+<dd>
+<Label text={roles[active.role as keyof typeof roles]}/>
+</dd>
+</div>
+<div>
+<dt>
+<Label text={"Institution / region"}/>
+</dt>
+<dd>
+<Label text={active.institution_name||active.region||'—'}/>
+</dd>
+</div>{active.student_id&&<div>
+<dt>
+<Label text={"Student link"}/>
+</dt>
+<dd>
+<Label text={active.student_id}/>
+</dd>
+</div>}<div>
+<dt>
+<Label text={"Reason"}/>
+</dt>
+<dd>
+<Label text={active.reason}/>
+</dd>
+</div>
+</dl>
+<p className="feedback-info">
+<Label text={"Confirm the applicant’s affiliation before approving. Student links are checked against enrolments. This prototype uses synthetic institution identities."}/>
+</p>
+</>}{member&&<p>
+<Label text={"They will lose access on their next request. Their account and submitted records will remain."}/>
+</p>}
+ {active?.status!=='pending'&&active?<p className="feedback-info">
+<Label text={active.status}/>: <Label text={active.review_note}/>
+</p>:<AccessDecisionForm active={active} member={member} currentUserId={currentUserId} note={note} setNote={setNote} busy={busy} error={error} send={send}/>}</div>
+</section>
+</div>}</>
 }
