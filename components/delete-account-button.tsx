@@ -1,4 +1,6 @@
 'use client'
+import {LocalizedButton,Label} from '@/components/language'
+
 
 import { useRef, useState } from 'react'
 import { Trash2, AlertTriangle, Loader2 } from 'lucide-react'
@@ -29,25 +31,27 @@ export function DeleteAccountButton() {
 
   return (
     <>
-      <button
+      <LocalizedButton
         type="button"
         onClick={() => {setError(null);dialog.current?.showModal()}}
         className="inline-flex items-center gap-2 rounded-lg border border-red-500/40 bg-red-500/10 px-6 py-3 text-sm font-medium text-red-700 transition hover:bg-red-500/20"
       >
         <Trash2 className="size-4" />
-        Delete Account
-      </button>
+<Label text={"Delete Account"}/>
+</LocalizedButton>
 
       <dialog ref={dialog} className="account-confirmation" aria-labelledby="delete-account-title" onCancel={event=>{if(isDeleting)event.preventDefault()}}>
         <AlertTriangle size={28} className="confirmation-warning" aria-hidden="true"/>
-        <h3 id="delete-account-title">Delete Your Account?</h3>
-        <p>This action is <strong>permanent and cannot be undone</strong>.</p>
-        <p>Your sign-in account and local access will be removed. Institution-managed academic records and audit history are retained.</p>
-        <p>If you sign up again later, you will need a new role approval.</p>
-        {error&&<p className="confirmation-error" role="alert">{error}</p>}
+        <h3 id="delete-account-title"><Label text={"Delete Your Account?"}/></h3>
+        <p><Label text={"This action is "}/><strong><Label text={"permanent and cannot be undone"}/></strong>.</p>
+        <p><Label text={"Your sign-in account and local access will be removed. Institution-managed academic records and audit history are retained."}/></p>
+        <p><Label text={"If you sign up again later, you will need a new role approval."}/></p>
+        {error&&<p className="confirmation-error" role="alert"><Label text={error}/></p>}
         <div className="confirmation-actions">
-          <button type="button" className="confirmation-cancel" autoFocus disabled={isDeleting} onClick={()=>{dialog.current?.close();setError(null)}}>Cancel</button>
-          <button type="button" className="confirmation-danger" disabled={isDeleting} onClick={handleDelete}>{isDeleting?<><Loader2 size={16} className="animate-spin"/>Deleting…</>:<><Trash2 size={16}/>Yes, Delete My Account</>}</button>
+          <LocalizedButton type="button" className="confirmation-cancel" autoFocus disabled={isDeleting} onClick={()=>{dialog.current?.close();setError(null)}}><Label text={"Cancel"}/></LocalizedButton>
+          <LocalizedButton type="button" className="confirmation-danger" disabled={isDeleting} onClick={handleDelete}>{isDeleting?<>
+<Loader2 size={16} className="animate-spin"/><Label text={"Deleting…"}/></>:<>
+<Trash2 size={16}/><Label text={"Yes, Delete My Account"}/></>}</LocalizedButton>
         </div>
       </dialog>
     </>

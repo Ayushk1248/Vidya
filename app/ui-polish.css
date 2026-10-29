@@ -1,0 +1,156 @@
+/* Presentation-only layer. The original application styles and behaviours stay intact. */
+html[lang=hi] body{font-family:'Nirmala UI','Noto Sans Devanagari',ui-sans-serif,system-ui,'Segoe UI',sans-serif;line-height:1.65}
+html[lang=hi] :is(h1,h2,h3){line-height:1.4;letter-spacing:0}
+html[lang=hi] :is(.eyebrow,.brand span){letter-spacing:.04em;line-height:1.8}
+html[lang=hi] .button{line-height:1.65;text-align:center}
+:root {
+ --ui-page:#fff;--ui-surface:#fff;--ui-raised:#fff;--ui-soft:#f4faf7;
+ --ui-ink:#0a251e;--ui-muted:#526b63;--ui-faint:#647c73;
+ --ui-brand:#047857;--ui-bright:#059669;--ui-mint:#eaf7f0;
+ --ui-line:#d9e7df;--ui-line-strong:#c4dcd0;--ui-field:#fff;
+ --ui-shadow:0 2px 5px #064e3b03,0 12px 36px #064e3b08;
+ --ui-shadow-hover:0 4px 9px #064e3b06,0 20px 48px #064e3b12;
+ --ui-glow:#d9f8e777;--ui-focus:#10b98132;--ui-scrim:#071e176b;
+ --ui-warning-bg:#fff8e8;--ui-warning:#805916;--ui-warning-line:#eed9a8;
+ --ui-error-bg:#fff2ef;--ui-error:#a03f35;--ui-error-line:#edc7be;
+ --ui-success-bg:#eaf8f0;--ui-success:#086846;--ui-button:#0a3025;
+ --background:var(--ui-page);--foreground:var(--ui-ink);--primary:var(--ui-ink);
+ color-scheme:light;
+}
+html {scroll-behavior:smooth;scroll-padding-top:24px;background:var(--ui-page)}
+body {background:var(--ui-page);color:var(--ui-ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI','Nirmala UI',sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection {background:#34d39945;color:var(--ui-ink)}
+html .portal {background:radial-gradient(ellipse at 95% 0,var(--ui-glow),transparent 42%),var(--ui-page);color:var(--ui-ink)}
+html .portal .topbar {background:color-mix(in srgb,var(--ui-surface) 92%,transparent);border-color:var(--ui-line);backdrop-filter:blur(16px);box-shadow:0 1px 0 #04785704}
+html .brand {color:var(--ui-ink);letter-spacing:.055em}
+html .brand span {color:var(--ui-muted);border-color:var(--ui-line-strong)}
+html :is(.content,.public-verification) {background:radial-gradient(ellipse at 100% 0,var(--ui-glow),transparent 52%),var(--ui-page);color:var(--ui-ink)}
+html :is(.sidebar,.auth-panel,.auth-footer,.home-footer,.landing footer,.seed-strip,.home-section,.workflow-section) {border-color:var(--ui-line)}
+html .sidebar {background:var(--ui-surface)}
+html :is(h1,h2,h3,.metric-grid strong,.stats strong,.explorer-totals strong,.tracker-summary strong,.review-overview strong,.risk-score strong,.workspace-location strong,.submission-steps strong) {color:var(--ui-ink)}
+html :is(h1,h2,h3) {text-wrap:balance}
+html :is(.hero h1 em,.home-hero h1 em,.auth-intro em) {background:linear-gradient(110deg,#047857,#0d9488,#10b981);color:transparent;background-clip:text;-webkit-background-clip:text}
+html :is(.muted,.card p,.hero p,.home-hero>div>p,.hero-footnote,.portal-card p,.home-steps p,.home-footer>p,.preview-top,.preview-metrics span,.preview-record div>span,.preview-bottom,.account-label span,.scope-box span,.sidebar-home,.sidebar-foot,.breadcrumb,.chart-legend,.stats span,.metric-grid article>span,.metric-grid small,.timeline-item small,.empty-inline p,.detail-list dt,.step p,.consent-toolbar p,.batch-choice small,.upload-panel p,.anomaly-intro p,.anomaly-evidence p,.anomaly-method p,.anomaly-run-info,.anomaly-distribution p,.risk-score span,.certificate-intro p,.public-result p,.public-file-check p,.public-check-footer,.explorer-totals span,.tracker-summary span,.capacity-legend,.comparison-row small,.tracker-note,.report-freshness,.review-overview span,.review-export-note,.journey-step small,.journey-heading p,.role-info-note,.certificate-preview-header p,.certificate-preview-details>p,.college-suggestion-count,.college-suggestions span,.workspace-location,.prototype-label,.workspace-disclosure>summary small,.disclosure-body>p,.disclosure-body li,.next-task p,.student-shortcuts p,.submission-steps span,.suggestion-hint,.auth-intro>p,.auth-benefit span,.auth-prototype,.auth-home,.auth-footer,.auth-status p,.portal-picker p,.password-toggle) {color:var(--ui-muted)}
+html :is(.workspace-v2 td small,.workspace-v2 .metric-grid small,.workspace-v2 .timeline-item small,.home-v2 .preview-institution small,.home-v2 .preview-step>span:last-child) {color:var(--ui-faint)}
+html :is(.eyebrow,.accent,.text-button,.table-title a,.home-footer>a:last-child,.portal-card>span,.sidebar svg,.stats svg,.metric-grid article>svg,.preview-record>svg,.preview-step>svg,.home-steps svg,.report-freshness svg,.journey-step span,.journey-step svg,.report-search-heading h2 svg,.student-shortcuts svg,.student-shortcuts span,.student-record summary,.report-notes summary,.workspace-disclosure>summary::after,.page-guide summary) {color:var(--ui-brand)}
+
+/* Surfaces retain the existing grid, dimensions and content. */
+html :is(.card,.hero-preview,.portal-card,.metric-grid article,.quick-links>a,.student-shortcuts>a,.workspace-disclosure,.workspace-disclosure>.card,.review-modal,.role-info-dialog,.certificate-preview-dialog,.college-suggestions,.anomaly-band,.batch-choice,.page-guide p) {background:var(--ui-surface);border-color:var(--ui-line);box-shadow:var(--ui-shadow);border-radius:14px;color:var(--ui-ink)}
+html :is(.card,.hero-preview,.portal-card,.metric-grid article) {border-top:2px solid var(--ui-bright)}
+html :is(.anomaly-intro.card,.certificate-intro,.content .milestone-banner) {background:var(--ui-surface)}
+html :is(.seed-strip,.preview-metrics>div,.preview-label,.peer-card,.anomaly-review,.verification-checks,.review-overview>div,.journey-step,.identity-evidence-grid article,.action-result,.field-chips span,.college-suggestion-count) {background:var(--ui-soft);border-color:var(--ui-line);color:var(--ui-muted)}
+html :is(.preview-icon,.request-status>.status-icon,.step>span.complete,.matching-example,.suggestion-panel,.role-info-scope,.anomaly-selected td,.version-changed>td,.version-changed>th,.peer-evidence-notice,.next-task,.batch-choice.selected) {background:var(--ui-mint);border-color:var(--ui-line-strong);color:var(--ui-ink)}
+html :is(.scope-box,.phase-note,.field-options,.query-item,.timeline-item,.detail-list>div,.preview-top,.preview-institution,.preview-record,.preview-step,.preview-bottom,.home-steps>div,.tab-bar,.review-toolbar,.certificate-preview-header,.table-title,.directory-tools,.live-report-header) {border-color:var(--ui-line)}
+html .preview-icon {color:var(--ui-brand);box-shadow:inset 0 1px 0 #ffffff18}
+html .hero-preview {box-shadow:0 2px 8px #064e3b03,0 24px 70px #064e3b12;overflow:hidden}
+html .portal-card>svg {box-sizing:content-box;padding:11px;border:1px solid var(--ui-line);border-radius:12px;background:var(--ui-mint);color:var(--ui-brand)}
+html .portal-card h3 {letter-spacing:-.025em}
+
+/* Buttons have the same handlers, labels and disabled states. */
+html .portal .button {background:linear-gradient(155deg,var(--ui-button),#064e3b);color:#f2fff8;border-color:#065f46;border-radius:9px;box-shadow:inset 0 1px 0 #ffffff17,0 3px 8px #064e3b0a;transition:background .2s ease,box-shadow .2s ease,transform .18s ease,border-color .2s ease}
+html .portal .button:hover:not(:disabled) {background:linear-gradient(155deg,#064e3b,#047857);border-color:#059669;box-shadow:inset 0 1px 0 #ffffff20,0 7px 18px #064e3b19}
+html .portal .button.secondary,html .portal .topbar .actions>.button.secondary {background:var(--ui-surface);color:var(--ui-ink);border-color:var(--ui-line-strong);box-shadow:0 1px 3px #064e3b04}
+html .portal .button.secondary:hover:not(:disabled) {background:var(--ui-mint);border-color:var(--ui-bright)}
+html :is(.button,.portal-card,.quick-links>a,.student-shortcuts>a):active:not(:disabled) {transform:scale(.985)}
+html .button>svg,html .portal-card>span>svg,html .quick-links>a>svg:last-child {transition:transform .22s ease}
+html .button:hover:not(:disabled)>svg,html .portal-card:hover>span>svg {transform:translateX(3px)}
+html .button:hover:not(:disabled)>svg.lucide-arrow-up-right {transform:translate(2px,-2px)}
+html .language-toggle {border-radius:999px;padding-inline:18px;box-shadow:0 0 0 3px transparent;transition:background .2s,box-shadow .2s}
+html .language-toggle:hover {box-shadow:0 0 0 3px var(--ui-focus)}
+html :is(.role-info-button,.role-dialog-close,.auth-check) {background:var(--ui-mint);color:var(--ui-brand);border-color:var(--ui-line-strong)}
+html .role-info-button:hover {background:var(--ui-soft);box-shadow:0 0 0 4px var(--ui-focus)}
+html :is(.nav-link,.task-tabs button,.tab-bar button,.portal-picker button) {color:var(--ui-muted);transition:background .2s,color .2s,border-color .2s,box-shadow .2s}
+html .nav-link:hover {background:var(--ui-soft);color:var(--ui-ink)}
+html :is(.nav-active,.portal-picker button[aria-pressed=true],.task-tabs button[aria-pressed=true]) {background:var(--ui-mint);color:var(--ui-brand);border-color:var(--ui-line-strong)}
+html .nav-active {box-shadow:inset 3px 0 0 var(--ui-bright)}
+html .portal-picker button {background:var(--ui-surface);border-color:var(--ui-line)}
+html .tab-bar button.selected {color:var(--ui-brand);border-color:var(--ui-bright)}
+html .task-tabs button span {background:var(--ui-soft);color:var(--ui-muted)}
+html .task-tabs button[aria-pressed=true] span {background:var(--ui-mint);color:var(--ui-brand)}
+
+/* Form recommendations and input focus remain fully functional. */
+html .portal :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]),select,textarea) {background-color:var(--ui-field);border-color:var(--ui-line-strong);color:var(--ui-ink);transition:border-color .18s ease,box-shadow .18s ease,background-color .18s ease;caret-color:var(--ui-brand)}
+html .portal :is(input,select,textarea)::placeholder {color:var(--ui-faint);opacity:.9}
+html .portal :is(input,select,textarea):focus-visible {outline:2px solid var(--ui-bright);outline-offset:2px;box-shadow:0 0 0 5px var(--ui-focus)}
+html .portal :is(button,a,summary):focus-visible {outline:2px solid var(--ui-bright);outline-offset:4px}
+html .portal :is(input[type=checkbox],input[type=radio]) {accent-color:var(--ui-bright)}
+html .portal :is(label,.auth-field>span,.auth-benefit strong,.workflow-form label,.report-filters label) {color:var(--ui-ink)}
+html .search-box,html .college-search-input {background:var(--ui-field);border-color:var(--ui-line-strong);color:var(--ui-brand)}
+html .college-search-input input {background:transparent;border:0;box-shadow:none}
+html .suggestion-toggle {background:var(--ui-mint);color:var(--ui-brand);border-color:var(--ui-line-strong);font-family:inherit;font-weight:600;font-size:11px;line-height:1.5;transition:background .2s,border-color .2s}
+html .suggestion-toggle:hover,html .suggestion-toggle[aria-expanded=true] {background:var(--ui-soft);border-color:var(--ui-bright)}
+html .suggestion-caption {color:var(--ui-brand)}
+html :is(.suggestion-options>button,.suggestion-example) {background:var(--ui-surface);color:var(--ui-ink);border-color:var(--ui-line);transition:background .18s,border-color .18s}
+html :is(.suggestion-options>button,.suggestion-example):hover {background:var(--ui-soft);border-color:var(--ui-bright)}
+html .college-suggestions button:hover,html .college-suggestions button:focus-visible {background:var(--ui-mint)}
+html .college-suggestions strong {color:var(--ui-ink)}
+
+/* Tables, integrity dialogs, feedback and semantic status colours. */
+html th {position:sticky;top:0;z-index:1;background:var(--ui-soft);color:var(--ui-muted);border-color:var(--ui-line);font-size:10px;letter-spacing:.09em}
+html td {border-color:var(--ui-line);color:var(--ui-ink);transition:background-color .18s ease}
+html td small {color:var(--ui-faint)}
+html tbody tr:hover>td {background:var(--ui-soft)}
+html :is(.mono,code,.history-reference) {font-family:'Cascadia Code','SFMono-Regular',Consolas,monospace;letter-spacing:.025em;font-variant-numeric:tabular-nums}
+html .mono {color:var(--ui-brand)}
+html .source-badge,html .status-pill,html .verification-badge,html .preview-label {border:1px solid var(--ui-line);border-radius:6px;box-shadow:inset 0 1px 0 #ffffff0b}
+html :is(.source-badge,.status-pill.approved,.verification-badge.valid) {background:var(--ui-success-bg);color:var(--ui-success);border-color:var(--ui-line-strong)}
+html :is(.status-pill,.status-pill.expired,.verification-badge) {background:var(--ui-soft);color:var(--ui-muted)}
+html :is(.status-pill.pending,.report-refresh-error) {background:var(--ui-warning-bg);color:var(--ui-warning);border-color:var(--ui-warning-line)}
+html :is(.status-pill.rejected,.status-pill.revoked,.feedback-error,.verification-badge.tampered,.verification-badge.revoked) {background:var(--ui-error-bg);color:var(--ui-error);border-color:var(--ui-error-line)}
+html .status-pill.approved,html .verification-badge.valid {background:var(--ui-success-bg);color:var(--ui-success)}
+html :is(.feedback-info,.milestone-banner,.notice,.demo-ribbon) {background:var(--ui-mint);color:var(--ui-success);border-color:var(--ui-line-strong)}
+html .feedback-error p,html .feedback-error strong,html .feedback-error li {color:inherit}
+html .synthetic-note {color:var(--ui-brand)}
+html .synthetic-note>span:last-child {color:var(--ui-muted)}
+html .anomaly-notice {background:var(--ui-soft);color:var(--ui-ink);border-color:var(--ui-line-strong)}
+html .peer-evidence-notice.insufficient {background:var(--ui-soft);color:var(--ui-muted)}
+html .modal-backdrop,html .edit-overlay {background:var(--ui-scrim);backdrop-filter:blur(7px)}
+html :is(.role-info-dialog,.certificate-preview-dialog)::backdrop {background:var(--ui-scrim);backdrop-filter:blur(7px)}
+html .edit-overlay>section,html .certificate-preview-header {background:var(--ui-surface);color:var(--ui-ink);border-color:var(--ui-line)}
+html .certificate-pdf-pane {background:var(--ui-soft)}
+html .review-modal .table-title {background:var(--ui-surface);border-color:var(--ui-line)}
+
+/* The display values of charts are unchanged; only the presentation interpolates. */
+html :is(.mini-meter,.risk-track) {background:var(--ui-line)}
+html :is(.mini-meter span,.risk-track i,.comparison-track i,.chart-bar.current,.chart-legend i,.timeline-item>span) {background:var(--ui-bright)}
+html .chart-bar {background:var(--ui-line-strong)}
+html .chart-column>span {background:var(--ui-surface);color:var(--ui-muted)}
+html :is(.mini-meter span,.risk-track i,.comparison-track i,.chart-bar) {transition:width .6s cubic-bezier(.2,.7,.3,1),height .6s cubic-bezier(.2,.7,.3,1)}
+html .bar-chart {background:repeating-linear-gradient(to top,transparent 0,transparent 44px,var(--ui-line) 45px,transparent 46px)}
+html .comparison-track .intake-bar,html .capacity-legend .intake-key {background:var(--ui-line-strong)}
+html .risk-score.low strong {color:var(--ui-brand)}
+html .risk-score.high strong {color:var(--ui-error)}
+html .capacity-summary {background:linear-gradient(140deg,#082c22,#064e3b);color:#effbf4;border-color:#1c5c44;box-shadow:var(--ui-shadow)}
+html .capacity-summary h2 {color:#effbf4}
+html .capacity-summary :is(p,.capacity-number span,.capacity-line>span) {color:#b7d8c5}
+html .capacity-summary .eyebrow,html .capacity-summary .text-button {color:#8ee7bd}
+html .map-marker circle {fill:var(--ui-bright);stroke:var(--ui-surface)}
+html .map-marker text {fill:var(--ui-ink);stroke:var(--ui-surface)}
+
+/* Decorative workflow connectors do not create or change any steps. */
+html .home-steps>div {position:relative}
+html .home-steps>div:not(:last-child)::after {content:'';position:absolute;left:42px;top:49px;bottom:-8px;width:1px;background:linear-gradient(var(--ui-line-strong),transparent);pointer-events:none}
+html .step>span {background:var(--ui-surface);border-color:var(--ui-line-strong)}
+html .live-dot {background:var(--ui-bright);animation:vidya-live 2.8s ease-in-out infinite}
+@keyframes vidya-live {0%,100%{box-shadow:0 0 0 0 #10b98112;opacity:1}50%{box-shadow:0 0 0 5px #10b98110;opacity:.65}}
+@keyframes vidya-enter {from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:no-preference){
+ .home-hero>div:first-child,.hero-preview,.portal-card,.demo-entry,.section-heading {animation:vidya-enter .45s cubic-bezier(.2,.7,.3,1) backwards}
+ .hero-preview {animation-delay:.08s}
+ .portal-card:nth-child(2){animation-delay:.06s}.portal-card:nth-child(3){animation-delay:.12s}.portal-card:nth-child(4){animation-delay:.18s}
+ .metric-grid article {animation:vidya-enter .35s ease-out backwards}
+ .metric-grid article:nth-child(2){animation-delay:.04s}.metric-grid article:nth-child(3){animation-delay:.08s}.metric-grid article:nth-child(4){animation-delay:.12s}
+ .portal [aria-busy=true],.portal .skeleton {background-image:linear-gradient(100deg,transparent 25%,#34d3990d 45%,transparent 65%);background-size:240% 100%;animation:vidya-shimmer 1.8s ease-in-out infinite}
+}
+@keyframes vidya-shimmer {from{background-position:100% 0}to{background-position:-100% 0}}
+@media(hover:hover) and (pointer:fine){
+ html :is(.portal-card,.metric-grid article,.quick-links>a,.student-shortcuts>a,.journey-step,.portal-entry-links>a) {transition:transform .25s cubic-bezier(.2,.7,.3,1),border-color .25s,box-shadow .25s,background .25s}
+ html :is(.portal-card,.metric-grid article,.quick-links>a,.student-shortcuts>a,.portal-entry-links>a):hover {transform:translateY(-4px);border-color:var(--ui-bright);box-shadow:var(--ui-shadow-hover);background:var(--ui-surface)}
+ html .journey-step:hover {transform:translateY(-2px);border-color:var(--ui-bright);background:var(--ui-mint)}
+}
+
+@media(prefers-reduced-motion:reduce){
+ html {scroll-behavior:auto}
+ html *,html *::before,html *::after {animation:none!important;transition:none!important;scroll-behavior:auto!important}
+ html :is(.portal-card,.metric-grid article,.quick-links>a,.student-shortcuts>a,.journey-step,.portal-entry-links>a):hover {transform:none}
+}

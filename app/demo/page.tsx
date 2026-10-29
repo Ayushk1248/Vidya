@@ -1,15 +1,5 @@
+
+import {LocalizedLink,Label} from '@/components/language'
 import Link from 'next/link'
-import { headers } from 'next/headers'
-import { demoEnabled } from '@/lib/platform/demo.mjs'
-import { LanguageToggle } from '@/components/language'
-import { RoleControls } from '@/components/role-controls'
-export const dynamic = 'force-dynamic'
-export default async function Demo() {
-  const enabled = demoEnabled((await headers()).get('host') || '')
-  return <main className="portal"><header className="topbar"><Link className="brand" href="/">◎ VIDYA<span>STUDENT DATA PLATFORM</span></Link><LanguageToggle/></header>
-    <section className="demo-entry card"><div className="eyebrow">LOCAL DEMONSTRATION</div><h1>Choose your workspace.</h1><p>Select a role to begin. Use the circled information button to see what that role can do.</p>
-      {enabled ? <RoleControls role="institution_operator" demo entry/> : <p>Local role switching is unavailable.</p>}
-      <p className="small muted">Synthetic data only · No official registry access</p>
-    </section>
-  </main>
-}
+import {portals} from '@/lib/platform/portals.mjs'
+export default function Demo(){return <main className="portal"><header className="topbar"><LocalizedLink className="brand" href="/"><Label text={"◎ VIDYA"}/><span><Label text={"PORTALS"}/></span></LocalizedLink></header><section className="demo-entry card"><div className="eyebrow"><Label text={"LOCAL DEMONSTRATION"}/></div><h1><Label text={"Open a portal."}/></h1><p><Label text={"Each portal opens in its own tab with only the roles in that category. Use the circled information button inside it to see role details."}/></p><div className="portal-entry-links">{Object.entries(portals).map(([key,portal])=><LocalizedLink key={key} className="button secondary" href={'/portal/'+key} target="_blank" rel="noopener noreferrer"><Label text={portal.label}/> ↗</LocalizedLink>)}</div><p className="small muted"><Label text={"Synthetic data only · Real accounts retain their assigned access."}/></p></section></main>}

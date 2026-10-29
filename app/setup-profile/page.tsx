@@ -1,4 +1,6 @@
 'use client'
+import {Label,LocalizedInput,LocalizedButton} from '@/components/language'
+
 
 import { PasswordInput } from '@/components/password-input'
 
@@ -137,7 +139,7 @@ export default function SetupProfilePage() {
       <div className="flex min-h-0 items-center justify-center bg-white">
         <div className="text-center">
           <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-teal-600 mx-auto" />
-          <p className="text-sm text-slate-600">Setting up your profile...</p>
+          <p className="text-sm text-slate-600"><Label text={"Setting up your profile..."}/></p>
         </div>
       </div>
     )
@@ -149,9 +151,9 @@ export default function SetupProfilePage() {
         <div className="text-center">
           <div className="mb-4 text-lg text-teal-700">✓</div>
           <div className="rounded-lg border border-teal-200 bg-teal-50 p-4 text-sm text-teal-800 max-w-sm mb-4">
-            {info}
+            <Label text={info}/>
           </div>
-          <p className="text-xs text-slate-500">Redirecting to dashboard...</p>
+          <p className="text-xs text-slate-500"><Label text={"Redirecting to dashboard..."}/></p>
         </div>
       </div>
     )
@@ -165,26 +167,25 @@ export default function SetupProfilePage() {
           <span className="text-3xl font-bold text-teal-700" aria-hidden="true">◎</span>
         </div>
 
-        <h1 className="mb-2 text-center text-xl font-semibold text-[#142b49]">Complete your profile</h1>
-        <p className="mb-7 text-center text-sm text-slate-600">Set your display name and email password for VIDYA</p>
+        <h1 className="mb-2 text-center text-xl font-semibold text-[#142b49]"><Label text={"Complete your profile"}/></h1>
+        <p className="mb-7 text-center text-sm text-slate-600"><Label text={"Set your display name and email password for VIDYA"}/></p>
 
         {error && (
           <p role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-center text-sm text-red-700">
-            {error}
+            <Label text={error}/>
           </p>
         )}
 
         {linkedProviders.length > 0 && (
-          <p role="status" className="mb-4 rounded-lg border border-teal-200 bg-teal-50 px-3 py-2.5 text-center text-xs text-teal-700">
-            Connected with: {linkedProviders.join(', ')}
+          <p role="status" className="mb-4 rounded-lg border border-teal-200 bg-teal-50 px-3 py-2.5 text-center text-xs text-teal-700"><Label text={"Connected with: "}/><Label text={linkedProviders.join(', ')}/>
           </p>
         )}
 
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
           <div className="space-y-3">
             <div>
-              <label className="text-xs font-medium text-slate-600">Display name</label>
-              <input aria-label="Display name" autoComplete="nickname"
+              <label className="text-xs font-medium text-slate-600"><Label text={"Display name"}/></label>
+              <LocalizedInput aria-label="Display name" autoComplete="nickname"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -194,7 +195,7 @@ export default function SetupProfilePage() {
             </div>
 
             <div>
-              <label className="text-xs font-medium text-slate-600">Password</label>
+              <label className="text-xs font-medium text-slate-600"><Label text={"Password"}/></label>
               <PasswordInput aria-label="Password" autoComplete="new-password"
                 type="password"
                 value={password}
@@ -203,11 +204,11 @@ export default function SetupProfilePage() {
                 required
                 className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-[#142b49] outline-none placeholder:text-slate-500 focus:border-teal-600"
               />
-              <p className="mt-1 text-xs text-slate-500">You&apos;ll be able to sign in with email + password or Google</p>
+              <p className="mt-1 text-xs text-slate-500"><Label text={"You'll be able to sign in with email + password or Google"}/></p>
             </div>
 
             <div>
-              <label className="text-xs font-medium text-slate-600">Confirm password</label>
+              <label className="text-xs font-medium text-slate-600"><Label text={"Confirm password"}/></label>
               <PasswordInput aria-label="Confirm password" autoComplete="new-password"
                 type="password"
                 value={confirmPassword}
@@ -219,18 +220,18 @@ export default function SetupProfilePage() {
               />
             </div>
 
-            <button
+            <LocalizedButton
               type="button"
               onClick={handleSetupProfile}
               disabled={saving}
               className="mt-4 flex w-full items-center justify-center rounded-lg bg-[#142b49] py-3 text-sm font-medium text-white transition hover:opacity-95 disabled:opacity-50"
             >
-              {saving ? 'Saving...' : 'Continue to workspace'}
-            </button>
+              <Label text={saving ? 'Saving...' : 'Continue to workspace'}/>
+            </LocalizedButton>
           </div>
         </div>
 
-        <p className="mt-5 text-center text-xs text-slate-500">You can change these settings later</p>
+        <p className="mt-5 text-center text-xs text-slate-500"><Label text={"You can change these settings later"}/></p>
       </div>
     </div>
   )

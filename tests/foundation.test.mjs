@@ -15,7 +15,8 @@ const verifier={role:'external_verifier'};
 const d=db();
 test('unrelated email/profile and deletion service modules remain unchanged',()=>{
  const baseline=JSON.parse(readFileSync('tests/auth-baseline.json','utf8'));
- for(const [file,hash] of Object.entries(baseline)) assert.equal(createHash('sha256').update(readFileSync(file)).digest('hex'),hash,file);
+ // Git checkouts may use CRLF on Windows and LF on other machines.
+ for(const [file,hash] of Object.entries(baseline)) assert.equal(createHash('sha256').update(readFileSync(file,'utf8').replaceAll('\r\n','\n')).digest('hex'),hash,file);
 });
 test('seed counts and database foreign keys',()=>{
  for(const [table,count] of Object.entries({institutions:100,programs:300,intake_approvals:1200,students:5000,mock_registry:5000,enrolments:20000,validation_rules:14}))

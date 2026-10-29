@@ -1,6 +1,6 @@
 import { mutation } from '@/lib/platform/web-session'
 import { apiError,sessionActor } from '@/lib/platform/session'
-import { requestConsent,decideConsent,consentResult,limit } from '@/lib/platform/workflows.mjs'
+import { requestConsent,decideConsent,consentResult,consentList,limit } from '@/lib/platform/workflows.mjs'
 import { AccessError } from '@/lib/platform/access.mjs'
 export const runtime='nodejs'
 export async function POST(request:Request){try{const {actor,body}=await mutation(request);if(!actor)throw new AccessError();
@@ -8,4 +8,4 @@ export async function POST(request:Request){try{const {actor,body}=await mutatio
  if(body.action==='decide')return Response.json(decideConsent(actor,String(body.id),String(body.decision),body.fields))
  throw new AccessError('Unknown action.',400)
  }catch(e){return apiError(e)}}
-export async function GET(request:Request){try{const actor=await sessionActor();limit(`result:${actor.user_id}`,30);return Response.json(consentResult(actor,new URL(request.url).searchParams.get('id')||''),{headers:{'Cache-Control':'no-store'}})}catch(e){return apiError(e)}}
+export async function GET(request:Request){try{const actor=await sessionActor();const id=new URL(request.url).searchParams.get('id');limit(`${id?'result':'consent-list'}:${actor.user_id}`,id?30:90);return Response.json(id?consentResult(actor,id):{requests:consentList(actor)},{headers:{'Cache-Control':'private, no-store'}})}catch(e){return apiError(e)}}

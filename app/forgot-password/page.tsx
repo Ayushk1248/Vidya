@@ -1,4 +1,6 @@
 'use client'
+import {Label,LocalizedInput,LocalizedButton} from '@/components/language'
+
 
 import { PasswordInput } from '@/components/password-input'
 
@@ -105,27 +107,27 @@ export default function ForgotPasswordPage() {
     <div className="flex min-h-0 items-center justify-center bg-white p-4">
       <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm ">
         <h1 className="mb-2 text-center text-2xl font-bold text-[#142b49]">
-          {canSetPassword ? 'Set New Password' : 'Reset Password'}
+          <Label text={canSetPassword ? 'Set New Password' : 'Reset Password'}/>
         </h1>
         <p className="mb-6 text-center text-sm text-slate-600">
-          {canSetPassword ? 'Choose a new password for your account.' : 'Enter your email to receive a reset link.'}
+          <Label text={canSetPassword ? 'Choose a new password for your account.' : 'Enter your email to receive a reset link.'}/>
         </p>
 
         {error && (
           <p role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-center text-sm text-red-700">
-            {error}
+            <Label text={error}/>
           </p>
         )}
 
         {success && (
           <p role="status" className="mb-4 rounded-lg border border-teal-200 bg-teal-50 px-4 py-2.5 text-center text-sm text-teal-800">
-            {success}
+            <Label text={success}/>
           </p>
         )}
 
         {!canSetPassword ? (
           <div className="space-y-3">
-            <label className="auth-field"><span>Email address</span><input aria-label="Email address" autoComplete="email"
+            <label className="auth-field"><span><Label text={"Email address"}/></span><LocalizedInput aria-label="Email address" autoComplete="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -133,25 +135,25 @@ export default function ForgotPasswordPage() {
               className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-[#142b49] outline-none placeholder:text-slate-500 focus:border-teal-600"
               onKeyDown={(e) => e.key === 'Enter' && handleSendResetEmail()}
             /></label>
-            <button
+            <LocalizedButton
               type="button"
               onClick={handleSendResetEmail}
               disabled={loading}
               className="flex w-full items-center justify-center rounded-lg bg-[#142b49] py-3 text-sm font-medium text-white transition hover:opacity-90 disabled:opacity-50"
             >
-              {loading ? 'Sending...' : submitted ? 'Resend Email' : 'Send Reset Email'}
-            </button>
+              <Label text={loading ? 'Sending...' : submitted ? 'Resend Email' : 'Send Reset Email'}/>
+            </LocalizedButton>
           </div>
         ) : (
           <div className="space-y-3">
-            <label className="auth-field"><span>Password</span><PasswordInput aria-label="Password" autoComplete="new-password"
+            <label className="auth-field"><span><Label text={"Password"}/></span><PasswordInput aria-label="Password" autoComplete="new-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="New password"
               className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-[#142b49] outline-none placeholder:text-slate-500 focus:border-teal-600"
             /></label>
-            <label className="auth-field"><span>Confirm password</span><PasswordInput aria-label="Confirm password" autoComplete="new-password"
+            <label className="auth-field"><span><Label text={"Confirm password"}/></span><PasswordInput aria-label="Confirm password" autoComplete="new-password"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -159,25 +161,23 @@ export default function ForgotPasswordPage() {
               className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-[#142b49] outline-none placeholder:text-slate-500 focus:border-teal-600"
               onKeyDown={(e) => e.key === 'Enter' && handleUpdatePassword()}
             /></label>
-            <button
+            <LocalizedButton
               type="button"
               onClick={handleUpdatePassword}
               disabled={loading}
               className="flex w-full items-center justify-center rounded-lg bg-[#142b49] py-3 text-sm font-medium text-white transition hover:opacity-90 disabled:opacity-50"
             >
-              {loading ? 'Updating...' : 'Update Password'}
-            </button>
+              <Label text={loading ? 'Updating...' : 'Update Password'}/>
+            </LocalizedButton>
           </div>
         )}
 
         <div className="mt-5 text-center">
-          <button
+          <LocalizedButton
             type="button"
             onClick={() => router.push('/login')}
             className="text-sm text-teal-700 hover:text-teal-700 transition"
-          >
-            Back to Sign In
-          </button>
+          ><Label text={"Back to Sign In"}/></LocalizedButton>
         </div>
       </div>
     </div>

@@ -46,8 +46,26 @@ test('rejection retains no privileges and permits a corrected request',()=>{
 });
 test('student linking checks institution and prevents duplicate ownership',()=>{
  const wrong=request('wrong-student','student',{institution_id:'A',student_id:'STU00002'});assert.throws(()=>reviewAccess(admin,wrong,'approved','Check student mapping'),/not enrolled/);
+ assert.match(accessQueue(admin).requests.find(r=>r.id===wrong).approval_issues.join(' '),/not enrolled/);
  const id=request('student','student',{institution_id:'A',student_id:'STU00001'});reviewAccess(head,id,'approved','Student identity confirmed');assert.equal(actorFor('student').student_id,'STU00001');
  const duplicate=request('another-student','student',{institution_id:'A',student_id:'STU00001'});assert.throws(()=>reviewAccess(admin,duplicate,'approved','Duplicate student claim'),/already linked/);
+ assert.match(accessQueue(admin).requests.find(r=>r.id===duplicate).approval_issues.join(' '),/already linked/);
+ reviewAccess(admin,wrong,'rejected','Please choose the institution where this student is enrolled');
+ assert.equal(actorFor('wrong-student'),undefined);
+});
+
+test('approve, reject and revoke require a reason and update access atomically',()=>{
+ const user='access-actions';syncProfile({id:user,email:'actions@example.invalid'});
+ const first=request(user,'external_verifier',{organisation:'Synthetic Access Test'});
+ for(const decision of ['approved','rejected'])assert.throws(()=>reviewAccess(admin,first,decision,'   '),/review note/);
+ assert.equal(actorFor(user),undefined);assert.equal(accessQueue(admin).requests.find(r=>r.id===first).status,'pending');
+ reviewAccess(admin,first,'rejected','Affiliation needs correction');
+ const second=request(user,'external_verifier',{organisation:'Synthetic Access Test'});
+ assert.deepEqual(accessQueue(admin).requests.find(r=>r.id===second).approval_issues,[]);
+ reviewAccess(admin,second,'approved','Synthetic affiliation checked');assert.equal(actorFor(user).role,'external_verifier');
+ assert.throws(()=>revokeAccess(admin,user,'bad'),/reason/);assert.ok(actorFor(user));
+ revokeAccess(admin,user,'Synthetic access no longer needed');assert.equal(actorFor(user),undefined);
+ assert.deepEqual(d.prepare('SELECT action FROM audit_events WHERE entity_id IN(?,?,?) AND action IN(?,?,?) ORDER BY sequence').all(first,second,user,'access.rejected','access.approved','access.revoked').map(r=>r.action),['access.rejected','access.approved','access.revoked']);
 });
 test('approved verifier gets no data without student approval',()=>{
  const id=request('verifier','external_verifier',{organisation:'Synthetic Verification Ltd'});reviewAccess(admin,id,'approved','Organisation verified for demo');

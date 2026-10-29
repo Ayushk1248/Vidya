@@ -4,10 +4,13 @@ import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
 import {DatabaseSync} from 'node:sqlite';
 import ts from 'typescript';
+import {rolePortal} from '../lib/platform/portals.mjs';
 
 // Load the actual server component; its client children are opaque at this boundary.
 const require=createRequire(import.meta.url),mod={exports:{}};
 const clientModules={
+ '@/lib/platform/portals.mjs':{rolePortal},
+ '@/components/language':{LocalizedLink:()=>null},
  './role-controls':{RoleControls:()=>null},
  './language':{LanguageToggle:()=>null,Label:()=>null},
  './sign-out-button':{SignOutButton:()=>null},

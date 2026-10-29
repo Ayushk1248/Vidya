@@ -1,4 +1,6 @@
 'use client'
+import {Label,LocalizedInput,LocalizedButton,LocalizedAnchor} from '@/components/language'
+
 
 import {Skeleton} from '@/components/presentation'
 import { GoogleSignIn } from '@/components/google-sign-in'
@@ -69,18 +71,14 @@ function LoginContent() {
   return (
     <div className="flex min-h-0 items-center justify-center bg-white p-4">
       <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm ">
-        <h1 className="mb-2 text-center text-2xl font-bold text-[#142b49]">
-          Welcome back
-        </h1>
-        <p className="mb-6 text-center text-sm text-slate-600">
-          Sign in to your VIDYA workspace
-        </p>
+        <h1 className="mb-2 text-center text-2xl font-bold text-[#142b49]"><Label text={"Welcome back"}/></h1>
+        <p className="mb-6 text-center text-sm text-slate-600"><Label text={"Sign in to your VIDYA workspace"}/></p>
 
 
 
         {error && (
           <p role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-center text-sm text-red-700">
-            {error}
+            <Label text={error}/>
           </p>
         )}
 
@@ -92,12 +90,12 @@ function LoginContent() {
               <div className="w-full border-t border-slate-200"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-slate-600">Or</span>
+              <span className="bg-white px-2 text-slate-600"><Label text={"Or"}/></span>
             </div>
           </div>
 
           <div className="space-y-3">
-            <label className="auth-field"><span>Email address</span><input aria-label="Email address" autoComplete="email"
+            <label className="auth-field"><span><Label text={"Email address"}/></span><LocalizedInput aria-label="Email address" autoComplete="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -105,7 +103,7 @@ function LoginContent() {
               className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-[#142b49] outline-none placeholder:text-slate-500 focus:border-teal-600"
               onKeyDown={(e) => e.key === 'Enter' && handleEmailLogin()}
             /></label>
-            <label className="auth-field"><span>Password</span><PasswordInput aria-label="Password" autoComplete="current-password"
+            <label className="auth-field"><span><Label text={"Password"}/></span><PasswordInput aria-label="Password" autoComplete="current-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -113,25 +111,20 @@ function LoginContent() {
               className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-[#142b49] outline-none placeholder:text-slate-500 focus:border-teal-600"
               onKeyDown={(e) => e.key === 'Enter' && handleEmailLogin()}
             /></label>
-            <button
+            <LocalizedButton
               type="button"
               onClick={handleEmailLogin}
               disabled={loading !== null || !isSupabaseConfigured()}
               className="flex w-full items-center justify-center rounded-lg bg-[#142b49] py-3 text-sm font-medium text-white transition hover:opacity-90 disabled:opacity-50"
             >
-              {loading === 'email' ? 'Signing in...' : 'Sign In'}
-            </button>
+              <Label text={loading === 'email' ? 'Signing in...' : 'Sign In'}/>
+            </LocalizedButton>
           </div>
 
           <div className="space-y-2 text-center text-sm">
-            <a href="/forgot-password" className="block text-teal-700 hover:text-teal-700 transition">
-              Forgot Password?
-            </a>
-            <p className="text-slate-600">
-              Don&apos;t have an account?{' '}
-              <a href="/signup" className="text-teal-700 hover:text-teal-700 transition">
-                Sign Up
-              </a>
+            <LocalizedAnchor href="/forgot-password" className="block text-teal-700 hover:text-teal-700 transition"><Label text={"Forgot Password?"}/></LocalizedAnchor>
+            <p className="text-slate-600"><Label text={"Don't have an account?"}/><Label text={' '}/>
+              <LocalizedAnchor href="/signup" className="text-teal-700 hover:text-teal-700 transition"><Label text={"Sign Up"}/></LocalizedAnchor>
             </p>
           </div>
         </div>

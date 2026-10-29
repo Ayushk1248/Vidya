@@ -6,6 +6,8 @@ Use a hosted deployment URL if you want the same records, role approvals and dat
 
 ## Run a cloned copy
 
+If you already have a checkout, first save or commit your own changes, then run `git fetch origin` and `git merge origin/master` on your working branch. Avoid resetting your checkout or force-pushing. The combined version preserves the portal tabs, scoped sessions, student consent, access decisions, dataset suggestions and Hindi interface alongside the workspace redesign, staff assignment and account deletion features.
+
 Create `.env.local` in the repository root (these two values are public browser configuration):
 
 ```dotenv
@@ -18,15 +20,17 @@ VIDYA_DEMO_MODE=0
 Install dependencies and initialize local synthetic data:
 
 ```powershell
-npm install
+npm ci
 py -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements-validation.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements-validation.txt -r requirements-seed.txt
 npm run init
 npm run seed
 npm run dev
 ```
 
 Use http://localhost:3001 consistently. Create/sign in with a separate email, then register your intended role. An approved administrator in THIS local database must approve it. If the clone has no administrator yet, the repository owner must explicitly designate one trusted developer for that copy; public signup cannot create AICTE administrators. After that person signs in, the owner can run `npm run role -- <verified-Supabase-user-UUID> aicte_admin` once in that local copy. Subsequent requests and staff assignments use Access management in the website. The existing local synthetic demo is a separate optional developer setup, not a production permission mechanism.
+
+For the optional local demonstration, set `VIDYA_DEMO_MODE=1` in `.env.local` and run `npm run demo:setup`, then open `/demo`. Each category has its own role session. This setup explicitly restores shared demo fixtures; do not use it to manage real account approvals. Environment files, encryption keys, uploaded files and the local SQLite database are excluded from Git, so pulling code does not copy another developer's records or account approvals.
 
 ## Supabase dashboard setup (project owner, once)
 

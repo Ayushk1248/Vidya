@@ -15,7 +15,13 @@ node --env-file=.env.local scripts/setup-demo.mjs
 npm run dev
 ```
 
-Open http://127.0.0.1:3001/demo. Eight role cards use signed, expiring, HTTP-only local demo sessions. Demo switching requires `VIDYA_DEMO_MODE=1`, a localhost host and a non-production process. Real Supabase accounts use the original authentication services; privileged accounts additionally require TOTP MFA. Do not expose the development server publicly.
+Open http://127.0.0.1:3001/demo. The four category links open separate tabs: Students, Institutions (Operator, Head and awarding body), AICTE (Regional Officer, AICTE Admin and System Administrator), and External Verifiers. Each local portal has its own signed, expiring, HTTP-only demo cookie, retained for seven days. Its dropdown shows only roles in that category; the circled information button explains the selected role. Log out ends this browser's account and demo sessions.
+
+Demo switching requires `VIDYA_DEMO_MODE=1`, a localhost host and a non-production process. Real Supabase accounts retain only their approved role; opening a portal never grants additional access. Valid account sessions are reused and refreshed, while expired or revoked sessions require sign-in. Privileged accounts additionally require TOTP MFA. Use separate browser profiles when testing different real accounts. Do not expose the development server publicly.
+
+Access management requires a reason of at least five characters for approval, rejection or revocation. Student approval also requires a matching institution and an identity that is not already linked to another account; the review dialog shows these blockers before submission. Revoked demo roles stay revoked when another demo role is entered. Running `npm run demo:setup` explicitly restores demo fixtures, while preserving a student identity already linked to another account.
+
+Data-entry forms offer **Suggestions** for dataset IDs, matching identity values, dates and other examples, plus **Example wording** for free-text explanations. Existing selects continue to show valid enumerated choices. Registration Student ID suggestions are restricted to unlinked synthetic students at the selected institution. Operators can use **Load matching student example** to fill a complete existing draft whose identity matches the mock registry and whose program is approved. This fills fields without submitting, checking an attestation, approving access or making a review decision. Authentication credentials, OTPs and uploaded files remain user-supplied. Suggestions query scoped records and explicit example values; they do not imply model training, official policy recommendations or a live registry connection.
 
 The local review environment uses validation port 8101 because port 8001 was already occupied. Set `VALIDATION_SERVICE_URL` to choose a different port. The launcher starts Next.js, FastAPI and four background workers: uploads, anomaly scoring, notifications/report delivery and identity rechecks.
 
@@ -35,7 +41,7 @@ The local review environment uses validation port 8101 because port 8001 was alr
 | M10 governance | Eight roles, institution/region/student scope, field encryption and masking, real-account TOTP MFA/recovery codes, hash-chain checks, signed journal checkpoints, retention policy, notification templates, encrypted backup command. |
 | M11 APIs | Institution-scoped API keys and OAuth2 client-credential bearer tokens, immediate revocation, upload/program/record/mock-registry endpoints, OpenAPI reference, signed/retried HTTPS webhooks with host allowlist and pinned public DNS resolution. |
 
-Hindi/English switching covers shared navigation, demo introduction, common headings and primary controls. Technical diagnostics, field codes and some detailed explanatory copy remain English. The browser retains the language preference.
+Hindi/English switching covers the landing page, sign-in screens, workspace navigation, role information, forms, placeholders, recommendations, dialogs, review controls, statuses and explanatory messages. The expanded catalogue includes more than 1,500 phrases and dynamic message templates. The browser retains the selected language after reload. Canonical form values, Student/APAAR IDs, names, entered text, API payloads and downloaded record data remain unchanged; switching the interface language does not translate or rewrite stored records.
 
 ## Demonstration sequence
 
@@ -43,7 +49,7 @@ Hindi/English switching covers shared navigation, demo introduction, common head
 2. Head: review the batch and request a demonstration OTP. Sign off. The mock OTP is visible only in explicit local demo mode; real-account sign-off requires configured SMTP delivery.
 3. AICTE: explore the map, review anomalies and queries, adjust policy/deadlines and download reports.
 4. Verifier: request fields for synthetic APAAR `990000000001` and explain the purpose.
-5. Student: approve a subset or reject. Return as verifier to see only the approved fields. Revoke and confirm access stops.
+5. Student: keep the Student tab open alongside the Verifier tab. Requests refresh automatically, with a manual Refresh status button available. Approve a subset or reject. Return to the Verifier tab to see only the approved fields. Revoke and confirm access stops.
 6. Head or awarding body: issue a certificate for a newly signed record. Open its public check; select the PDF to verify its fingerprint.
 7. Technical administrator: inspect service readiness and delivery status. Student-record APIs remain inaccessible.
 
