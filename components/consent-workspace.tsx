@@ -6,6 +6,7 @@ import {useState,useCallback,useEffect,useRef} from 'react'
 import {Feedback,ExpiryCountdown,Provenance} from './presentation'
 import type {Consent} from '@/lib/platform/workflows.mjs'
 const labels:Record<string,string>={name:'Student name',dob:'Date of birth',student_id:'Student ID',apaar:'Masked APAAR',institution:'Institution',program:'Program',academic_year:'Academic year'}
+const requestStatus:Record<string,string>={pending:'Awaiting student decision',approved:'Sharing active',rejected:'Declined by student',revoked:'Access revoked',expired:'Access expired'}
 export function ConsentWorkspace({student,requests:initialRequests}:{student:boolean;requests:Consent[]}){
  const [requests,setRequests]=useState(initialRequests)
  const [tab,setTab]=useState('pending');const visible=student?requests.filter(r=>tab==='pending'?r.status==='pending':tab==='approved'?r.status==='approved':!['pending','approved'].includes(r.status)):requests;
@@ -13,13 +14,13 @@ export function ConsentWorkspace({student,requests:initialRequests}:{student:boo
  const pending=useRef<AbortController|null>(null)
  const refreshRequests=useCallback(async()=>{if(pending.current)return;const controller=new AbortController();pending.current=controller;try{const response=await fetch('/api/platform/consents',{cache:'no-store',signal:controller.signal});const data=await response.json();if(!response.ok)throw new Error(data.error||'Could not refresh requests.');setRequests(data.requests);setError('')}catch(e){if(!controller.signal.aborted)setError((e as Error).message)}finally{if(pending.current===controller)pending.current=null}},[])
  useEffect(()=>{queueMicrotask(()=>{void refreshRequests()});const update=()=>{if(document.visibilityState==='visible')void refreshRequests()};const timer=setInterval(update,5000);window.addEventListener('focus',update);document.addEventListener('visibilitychange',update);return()=>{clearInterval(timer);window.removeEventListener('focus',update);document.removeEventListener('visibilitychange',update);pending.current?.abort();pending.current=null}},[refreshRequests])
- async function action(body:Record<string,unknown>){setBusy(true);setError('');setSuccess('');try{const res=await fetch('/api/platform/consents',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await res.json();if(!res.ok)throw new Error(data.error);setSuccess(body.action==='request'?'Request delivered. Open the Student portal to approve it.':body.decision==='approved'?'Selected fields approved. The verifier can now view them.':body.decision==='revoked'?'Approval revoked. The verifier no longer has access.':'Request declined.');await refreshRequests();if(student&&body.action==='decide')setTab(body.decision==='approved'?'approved':'history');return true}catch(e){setError(e instanceof Error?e.message:'Request failed.');return false}finally{setBusy(false)}}
+ async function action(body:Record<string,unknown>){setBusy(true);setError('');setSuccess('');try{const res=await fetch('/api/platform/consents',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await res.json();if(!res.ok)throw new Error(data.error);setSuccess(body.action==='request'?'Request sent. Details stay private until the student approves.':body.decision==='approved'?'Sharing approved. Only your selected fields are available until expiry or revocation.':body.decision==='revoked'?'Access revoked. The verifier can no longer retrieve these details.':'Request declined. No details have been shared.');await refreshRequests();if(student&&body.action==='decide')setTab(body.decision==='approved'?'approved':'history');return true}catch(e){setError(e instanceof Error?e.message:'Request failed.');return false}finally{setBusy(false)}}
  async function submit(event:React.FormEvent<HTMLFormElement>){event.preventDefault();const form=event.currentTarget;const data=new FormData(form);if(await action({action:'request',apaar:data.get('apaar'),purpose:data.get('purpose'),fields:data.getAll('fields')}))form.reset()}
  async function view(id:string){setBusy(true);setError('');setResult(null);try{const res=await fetch(`/api/platform/consents?id=${id}`,{cache:'no-store'});const data=await res.json();if(!res.ok)throw new Error(data.error);setResult({id,...data})}catch(e){setError(e instanceof Error?e.message:'Unable to view result.')}finally{setBusy(false)}}
  return <>
 <div className="consent-toolbar">
 <p>
-<Label text={student?'You decide which requested fields to share. You can revoke an active approval.':'Approvals last until the request expires, at most 24 hours after creation.'}/>
+<Label text={student?'Review each request, choose which fields to share, or decline it. You can revoke access later.':'Requests expire 24 hours after they are created, including time spent awaiting approval. You can view only fields the student approves.'}/>
 </p>
 <LocalizedButton className="button secondary" onClick={()=>{setResult(null);void refreshRequests()}}>
 <Label text={"Refresh status"}/>
@@ -126,8 +127,8 @@ export function ConsentWorkspace({student,requests:initialRequests}:{student:boo
 </dd>
 </div>)}</dl>
 <ExpiryCountdown expires={result.expires_at}/>
-<p className="small muted"><Label text={result.source}/><br/><Label text={"Access expires "}/><Label text={new Date(result.expires_at).toLocaleString('en-IN')}/>.</p>
-<p className="feedback-info"><Label text={"This shows institution-submitted details, not a signed certificate or registry verification."}/></p>
+<p className="small muted"><Label text={result.source}/><br/><Label text={"Access expires "}/><Label text={new Date(result.expires_at).toLocaleString('en-IN')}/>. <Label text="The student can revoke access sooner."/></p>
+<p className="feedback-info"><Label text={"These are institution-submitted details. Student consent permits sharing; it does not certify the record or confirm its match with the registry."}/></p>
 </div>
 </section>
 </div>}</>
@@ -137,7 +138,7 @@ function ConsentCard({request,student,busy,decide,view}:{request:Consent;student
  return <article className="card consent-card">
 <div className="consent-card-heading">
 <span className={`status-pill ${request.status}`}>
-<Label text={request.status}/>
+<Label text={requestStatus[request.status]||request.status}/>
 </span>
 <span className="muted small">#<Label text={request.id.slice(0,8)}/>
 </span>
@@ -166,7 +167,7 @@ function ConsentCard({request,student,busy,decide,view}:{request:Consent;student
 <Label text={"Approve selected fields"}/>
 </LocalizedButton>
 </>}{student&&request.status==='approved'&&<LocalizedButton className="button secondary" disabled={busy} onClick={()=>decide('revoked',[])}>
-<Label text={"Revoke approval"}/>
+<Label text={"Revoke access"}/>
 </LocalizedButton>}{!student&&request.status==='approved'&&<LocalizedButton className="button" disabled={busy} onClick={view}>
 <Label text={"View approved details →"}/>
 </LocalizedButton>}</div>

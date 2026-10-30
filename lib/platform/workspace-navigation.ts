@@ -22,7 +22,11 @@ const navigation: Record<string, WorkspaceLink[]> = {
   aicte_admin: [...oversight,{id:'access',href:'/access',label:'Access management',icon:'admin'}],
   regional_officer: oversight,
   external_verifier: [{ id: 'verification', href: '/verification', label: 'Verification requests', icon: 'verification' }],
-  student: [{ id: 'verification', href: '/verification', label: 'Consent centre', icon: 'verification' }],
+  student: [
+    { id: 'verification', href: '/verification', label: 'Consent centre', icon: 'verification' },
+    { id: 'records', href: '/records', label: 'My records', icon: 'report' },
+    { ...certificates, label: 'My certificates' },
+  ],
   awarding_body: [certificates],
   system_admin: [{ id: 'admin', href: '/admin', label: 'System administration', icon: 'admin' }],
 }

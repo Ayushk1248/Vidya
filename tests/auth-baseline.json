@@ -1,4 +1,4 @@
 {
-  "lib/auth/supabase-auth.ts": "097a61527009577d60512a2f6d106e88ea82155b74241f6f9e7bc1da690b046d",
+  "lib/auth/supabase-auth.ts": "bd86872287f71a5ae7eff7e3f6df70bb70833233c29647fa81129903b588c6cc",
   "components/delete-account-button.tsx": "0bd96b1b91f7779cee2e3a2b04022c7991028992d4318c36221636aab1f3b406"
 }

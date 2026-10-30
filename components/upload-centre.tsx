@@ -13,6 +13,8 @@ type Row={row_number:number;student_id:string;apaar:string;name:string;dob:strin
 type Batch={id:string;filename:string;status:string;version:number;total:number;errors:number;warnings:number;error?:string;reason?:string;institution_name?:string;parent_id?:string}
 type Detail={batch:Batch;rows:Row[];total:number;page:number;summary:{total:number;ok:number;error:number;warning:number;critical:number}}
 type Rule={code:string;title:string;severity:string;enabled:number;configuration:string}
+const batchStatus:Record<string,string>={queued:'Waiting for validation',processing:'Validation in progress',draft:'Draft - review and correct',review:'Awaiting Head sign-off',signed_off:'Head sign-off complete',failed:'Processing failed'}
+const rowStatus:Record<string,string>={ok:'Checks passed',error:'Correction required',warning:'Review findings',pending:'Not checked yet'}
 export function UploadCentre({role}:{role:string}){
  const [list,setList]=useState<Batch[]>([]),[selected,setSelected]=useState(''),[detail,setDetail]=useState<Detail|null>(null),[page,setPage]=useState(1),[filter,setFilter]=useState('all'),[severity,setSeverity]=useState('all'),[rule,setRule]=useState('all'),[search,setSearch]=useState(''),[query,setQuery]=useState(''),[message,setMessage]=useState(''),[busy,setBusy]=useState(false),[edit,setEdit]=useState<Row|null>(null),[code,setCode]=useState(''),[demo,setDemo]=useState(''),[reason,setReason]=useState(''),[rules,setRules]=useState<Rule[]>([]),[caps,setCaps]=useState<{scheme:string;cap_percent:number}[]>([]),[duplicates,setDuplicates]=useState<{enrolment_id:string;message:string}[]>([])
  const operator=role==='institution_operator',head=role==='institution_head',admin=role==='aicte_admin'
@@ -77,7 +79,7 @@ export function UploadCentre({role}:{role:string}){
 <Label text={b.institution_name}/>
 </small>
 <span className={`status-pill ${b.status==='signed_off'?'approved':'pending'}`}>
-<Label text={b.status.replaceAll('_',' ')}/>
+<Label text={batchStatus[b.status]||b.status.replaceAll('_',' ')}/>
 </span>
 <small>
 <Label text={b.total||0}/>
@@ -103,7 +105,7 @@ export function UploadCentre({role}:{role:string}){
 <Label text={detail.batch.filename}/>
 </h2>
 <p>
-<Label text={detail.batch.status.replaceAll('_',' ')}/>
+<Label text={batchStatus[detail.batch.status]||detail.batch.status.replaceAll('_',' ')}/>
 <Label text={"· version "}/>
 <Label text={detail.batch.version}/>
 </p>
@@ -111,7 +113,7 @@ export function UploadCentre({role}:{role:string}){
 <div className="actions">
 <span className="status-pill"><Label text={detail.batch.total}/><Label text={"records"}/></span>{detail.batch.errors>0&&<LocalizedAnchor href="#validation-results" className="button secondary"><Label text={"Fix errors ↓"}/></LocalizedAnchor>}</div>
 </div>{detail.batch.reason&&<p>
-<strong><Label text={"Correction reason:"}/></strong> <Label text={detail.batch.reason}/></p>}{detail.batch.error&&<p role="alert"><Label text={detail.batch.error}/></p>}{['queued','processing'].includes(detail.batch.status)&&<p className="synthetic-note"><Label text={"Processing in the background… This page refreshes automatically."}/></p>}<div className="actions">{operator&&detail.batch.status==='draft'&&<LocalizedButton className={`button ${detail.batch.errors===0?'submission-ready':''}`} disabled={busy||detail.batch.errors>0} onClick={()=>action('submit')}><Label text={"Submit to Institution Head"}/></LocalizedButton>}{operator&&detail.batch.status==='failed'&&<LocalizedButton className="button" disabled={busy} onClick={()=>action('retry')}><Label text={"Retry processing"}/></LocalizedButton>}{head&&detail.batch.status==='review'&&<LocalizedButton className="button" disabled={busy} onClick={()=>action('otp')}><Label text={"Request demonstration OTP"}/></LocalizedButton>}</div>{head&&demo&&detail.batch.status==='review'&&<div className="upload-panel">
+<strong><Label text={"Correction reason:"}/></strong> <Label text={detail.batch.reason}/></p>}{detail.batch.error&&<p role="alert"><Label text={detail.batch.error}/></p>}{['queued','processing'].includes(detail.batch.status)&&<p className="synthetic-note"><Label text={"Processing in the background… This page refreshes automatically."}/></p>}<div className="actions">{operator&&detail.batch.status==='draft'&&<LocalizedButton className={`button ${detail.batch.errors===0?'submission-ready':''}`} disabled={busy||detail.batch.errors>0} onClick={()=>action('submit')}><Label text={"Submit to Institution Head"}/></LocalizedButton>}{operator&&detail.batch.status==='failed'&&<LocalizedButton className="button" disabled={busy} onClick={()=>action('retry')}><Label text={"Retry processing"}/></LocalizedButton>}{head&&detail.batch.status==='review'&&<LocalizedButton className="button" disabled={busy} onClick={()=>action('otp')}><Label text={"Request sign-off code"}/></LocalizedButton>}</div>{head&&demo&&detail.batch.status==='review'&&<div className="upload-panel">
 <p><Label text={"Mock OTP: "}/><strong className="mono"><Label text={demo}/></strong><Label text={"· valid for five minutes. No SMS is sent."}/></p>
 <label><Label text={"Enter demonstration OTP"}/><LocalizedInput className="otp-input" inputMode="numeric" autoComplete="one-time-code" value={code} onChange={e=>setCode(e.target.value)} maxLength={6}/>
 </label>
@@ -134,7 +136,7 @@ export function UploadCentre({role}:{role:string}){
 <div>
 <div className="eyebrow"><Label text={"VALIDATION ENGINE"}/></div>
 <h3><Label text={['queued','processing'].includes(detail.batch.status)?'Your batch is being checked':'The batch results are ready for review'}/></h3>
-<p><Label text={['queued','processing'].includes(detail.batch.status)?'Server-side parsing and validation are in progress. Results refresh automatically; per-rule progress is not streamed.':'Review the actual row findings below before submitting for Head approval.'}/></p>
+<p><Label text={['queued','processing'].includes(detail.batch.status)?'Server-side parsing and validation are in progress. Results refresh automatically; results appear when the checks finish.':'Review the actual row findings below before submitting for Head approval.'}/></p>
 <div className="validation-rule-strip" aria-label="Validation rule identifiers">{Array.from({length:14},(_,i)=>
 <span key={i}>V<Label text={String(i+1).padStart(2,'0')}/></span>)}</div>{['queued','processing'].includes(detail.batch.status)&&<Skeleton rows={2} label="Waiting for server validation results"/>}</div>
 <RingGauge value={detail.summary.total?detail.summary.ok/detail.summary.total*100:null} label="rows ready"/>
@@ -262,7 +264,7 @@ export function UploadCentre({role}:{role:string}){
 </small>)}</td>
 <td>
 <span className={`status-pill ${r.result?.status==='error'?'rejected':r.result?.status==='ok'?'approved':'pending'}`}>
-<Label text={r.result?.status||'pending'}/>
+<Label text={rowStatus[r.result?.status||'pending']||r.result?.status}/>
 </span>{r.result?.issues.map((i,n)=>
 <div key={n}>
 <small>

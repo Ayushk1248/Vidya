@@ -23,7 +23,7 @@ export function OnboardingForm({data}:{data:Data}){
 <Label text={"Awaiting review"}/>
 </span>
 <h2>
-<Label text={"Your request is with the reviewer."}/>
+<Label text={"Your account is waiting for access approval."}/>
 </h2>
 <p>
 <Label text={"You requested "}/>
@@ -31,7 +31,7 @@ export function OnboardingForm({data}:{data:Data}){
 <Label text={roles[pending.role as keyof typeof roles]}/>
 </strong>
 <Label text={pending.institution_id?` at ${data.institutions.find(i=>i.id===pending.institution_id)?.name}`:''}/>
-<Label text={". Your access will become available after approval."}/>
+<Label text={". Your sign-in works, but academic data stays unavailable until an authorised reviewer approves this role."}/>
 </p>
 <dl className="detail-list">
 <div>
