@@ -4,11 +4,11 @@ import {LocalizedAnchor,Label} from '@/components/language'
 
 import { isSupabaseConfigured } from '@/lib/auth/config'
 
-export function GoogleSignIn({ disabled = false }: { disabled?: boolean }) {
+export function GoogleSignIn({ disabled = false,administrator=false }: { disabled?: boolean;administrator?:boolean }) {
   const unavailable = !isSupabaseConfigured() || disabled
   return <div>
     <LocalizedAnchor
-      href={unavailable ? undefined : '/auth/google'}
+      href={unavailable ? undefined : administrator?'/auth/google?administrator=1':'/auth/google'}
       target="_blank"
       rel="noopener noreferrer"
       role="button"

@@ -30,6 +30,15 @@ test('provider errors do not leak internal error details', async () => {
   assert.equal(await startGoogleOAuth(client, 'http://localhost:3001'), '/login?error=google_unavailable');
 });
 
+test('administrator sign-in returns to the administrator role check without granting a role',async()=>{
+ let options;
+ const client={auth:{signInWithOAuth:async value=>{options=value;return {data:{url:'https://example.supabase.co/auth/v1/authorize'}}},exchangeCodeForSession:async()=>({error:null}),getUser:async()=>({data:{user:{user_metadata:{username:'student'}}}})}};
+ await startGoogleOAuth(client,'http://localhost:3001',true);
+ assert.equal(options.options.redirectTo,'http://localhost:3001/auth/callback?administrator=1');
+ assert.equal(await finishGoogleOAuth(client,'http://localhost:3001/auth/callback?administrator=1&code=valid'),'/administrator');
+ assert.equal(await finishGoogleOAuth(client,'http://localhost:3001/auth/callback?administrator=1'),'/login?error=missing_auth_code');
+});
+
 test('callback verifies the exchanged session before routing an existing user', async () => {
   const calls = [];
   const client = {auth: {

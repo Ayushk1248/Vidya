@@ -32,6 +32,14 @@ Use http://localhost:3001 consistently. Create/sign in with a separate email, th
 
 For the optional local demonstration, set `VIDYA_DEMO_MODE=1` in `.env.local` and run `npm run demo:setup`, then open `/demo`. Each category has its own role session. This setup explicitly restores shared demo fixtures; do not use it to manage real account approvals. Environment files, encryption keys, uploaded files and the local SQLite database are excluded from Git, so pulling code does not copy another developer's records or account approvals.
 
+## Administrator access and role changes
+
+Open `/administrator` using **Sign in as administrator** on the home page, sign-in form or workspace account menu. Use an already approved AICTE Admin account with Google or email sign-in. Selecting this entry never promotes a student or grants a role. If another account is currently signed in, the administrator form can authenticate the approved administrator account; separate browser profiles keep real accounts independent.
+
+In **Access management**, use **Manage roles by email** to search a registered account. The person must have signed in to this local copy at least once. Select **Change role**, choose a role and its institution/region/student scope, enter a reason and explicitly save. Only AICTE Admin can do this. Self changes, invalid student links, duplicate student ownership and stale edits are blocked. Changes are recorded in review history and the audit log; detached student or verifier sharing is revoked. Privileged MFA verification is bound to the assigned role and scope, so a newly privileged session must verify its authenticator. Existing MFA enrollments remain intact; earlier MFA cookies need one fresh verification after this update.
+
+The optional localhost-only administrator demo opens in a separate tab and goes directly to the request review page. It keeps the student portal's category session separate. Shared demo role assignments are fixed and excluded from email role editing. The demo does not promote the signed-in Google account. Production requires assigned accounts and MFA.
+
 ## Supabase dashboard setup (project owner, once)
 
 Authentication → URL Configuration: Site URL `http://localhost:3001`. Add these development Redirect URLs once:

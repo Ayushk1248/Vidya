@@ -14,6 +14,7 @@ export default function Home(){return <main className="portal home-v2">
 </LocalizedLink>
 <nav className="home-nav">
 <LanguageToggle/>
+<LocalizedLink href="/administrator"><Label text="Sign in as administrator"/></LocalizedLink>
 <LocalizedLink href="/demo">
 <Label text={"Explore demo"}/>
 </LocalizedLink>

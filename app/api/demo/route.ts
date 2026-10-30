@@ -21,5 +21,6 @@ export async function POST(request:Request){
  jar.set('vidya-portal',category,{httpOnly:true,sameSite:'lax',path:'/',maxAge:ttl})
  jar.delete('vidya-demo')
  audit(actor.user_id,'demo.session_started',role)
- return Response.redirect(new URL(portalPath(workspaceHome(role),category),url),303)
+ const next=form.get('next')==='/access'&&role==='aicte_admin'?'/access':workspaceHome(role)
+ return Response.redirect(new URL(portalPath(next,category),url),303)
 }
