@@ -1791,5 +1791,13 @@
   "Review service status": "सेवा की स्थिति देखें",
   "Preserve audit evidence": "ऑडिट साक्ष्य सुरक्षित रखें",
   "Review the available audit checkpoints and backup guidance. Store downloaded checkpoints independently.": "उपलब्ध ऑडिट चेकपॉइंट और बैकअप निर्देश देखें। डाउनलोड किए गए चेकपॉइंट अलग सुरक्षित रखें।",
-  "Review audit checkpoints": "ऑडिट चेकपॉइंट देखें"
+  "Review audit checkpoints": "ऑडिट चेकपॉइंट देखें",
+  "Loading workspace": "कार्यक्षेत्र लोड हो रहा है",
+  "Optional account security": "वैकल्पिक खाता सुरक्षा",
+  "Optional authenticator setup": "वैकल्पिक प्रमाणक सेटअप",
+  "Set up optional authenticator": "वैकल्पिक प्रमाणक सेट अप करें",
+  "Authenticator verification is optional for this local prototype. You can open your workspace with your signed-in account.": "इस स्थानीय प्रोटोटाइप में प्रमाणक सत्यापन वैकल्पिक है। अपने साइन-इन खाते से कार्यक्षेत्र खोल सकते हैं।",
+  "You can use your signed-in account without an authenticator in this local prototype. Set one up only if you want to try it.": "इस स्थानीय प्रोटोटाइप में आप प्रमाणक के बिना अपने साइन-इन खाते का उपयोग कर सकते हैं। इसे केवल आज़माना चाहें तो सेट अप करें।",
+  "Review the security options shown on this page. Continue to your workspace when verification is not required.": "इस पृष्ठ पर सुरक्षा के विकल्प देखें। सत्यापन आवश्यक न हो तो अपने कार्यक्षेत्र में जाएँ।",
+  "This replaces the current assignment. Previous student or verifier sharing permissions are revoked when their identity changes. Verification requirements follow the project’s security settings.": "इससे वर्तमान भूमिका बदल जाएगी। छात्र या सत्यापनकर्ता की पहचान बदलने पर उसकी पिछली साझा अनुमतियाँ रद्द हो जाएँगी। सत्यापन की आवश्यकता परियोजना की सुरक्षा सेटिंग्स के अनुसार होगी।"
 }

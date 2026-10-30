@@ -13,7 +13,9 @@ export async function proxy(request: NextRequest) {
   const forwarded = new Headers(request.headers)
   forwarded.delete('x-vidya-portal')
   if (category) forwarded.set('x-vidya-portal', category)
-  const target = new URL(visibleUrl)
+  // Keep rewrites on Next's own origin. localhost/127.0.0.1 aliases must not
+  // turn an internal portal route into an HTTP proxy back to this server.
+  const target = request.nextUrl.clone()
   if (portal && portal.path !== '/') {target.pathname = portal.path;target.searchParams.set('__vidya_portal',portal.category)}
   const redirect = !portal && category && !visibleUrl.searchParams.has('__vidya_portal') && workspaceRoutes.test(visibleUrl.pathname)
   const createResponse = () => redirect
@@ -34,7 +36,9 @@ export async function proxy(request: NextRequest) {
         values.forEach(({name,value,options}) => response.cookies.set(name,value,options))
       },
     } })
-    try { await client.auth.getUser() } catch { /* The page verifies access and shows sign-in when required. */ }
+    // Refresh expiring cookies here; pages still verify the user with getUser().
+    // getClaims validates signed tokens locally instead of an extra auth round trip.
+    try { await client.auth.getClaims() } catch { /* The page verifies access and shows sign-in when required. */ }
   }
   return response
 }

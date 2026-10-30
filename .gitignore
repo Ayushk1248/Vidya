@@ -54,3 +54,4 @@ tmp/
 /.next-suggestions-check/
 __pycache__/
 *.pyc
+.next-preview/

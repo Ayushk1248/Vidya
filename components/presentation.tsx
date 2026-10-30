@@ -2,18 +2,16 @@
 import {Label,LocalizedButton} from '@/components/language'
 
 import {useEffect,useSyncExternalStore,useRef} from 'react'
-import {usePathname} from 'next/navigation'
 import {MotionConfig,motion,useReducedMotion,animate} from 'framer-motion'
 import {Check,ShieldCheck,Info} from 'lucide-react'
 export function PresentationProvider({children}:{children:React.ReactNode}){
- const pathname=usePathname()
  useEffect(()=>{
   document.documentElement.dataset.theme='light'
   document.documentElement.style.colorScheme='light'
   // Clear the retired preference so existing browsers return to the white theme.
   try{localStorage.removeItem('vidya-theme')}catch{}
  },[])
- return <MotionConfig reducedMotion="user"><motion.div key={pathname} initial={{opacity:.7}} animate={{opacity:1}} transition={{duration:.18}}>{children}</motion.div></MotionConfig>
+ return <MotionConfig reducedMotion="user">{children}</MotionConfig>
 }
 export function CountUp({value}:{value:number}){const ref=useRef<HTMLSpanElement>(null),reduce=useReducedMotion();useEffect(()=>{if(reduce||!ref.current)return;const node=ref.current;const control=animate(0,value,{duration:.65,onUpdate:n=>{node.textContent=Math.round(n).toLocaleString('en-IN')}});return()=>control.stop()},[value,reduce]);return <span><span className="sr-only"><Label text={value.toLocaleString('en-IN')}/></span><span ref={ref} aria-hidden="true"><Label text={value.toLocaleString('en-IN')}/></span></span>}
 export function Skeleton({rows=3,label='Loading records'}:{rows?:number;label?:string}){return <div className="skeleton-panel" role="status" aria-label={label}><span className="sr-only"><Label text={label}/></span>{Array.from({length:rows},(_,i)=><div key={i} className="skeleton-line" style={{width:`${100-i%3*18}%`}}/>)}</div>}

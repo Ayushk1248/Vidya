@@ -2,7 +2,7 @@
 import {LocalizedButton,LocalizedSelect,LocalizedAnchor,LocalizedLink} from '@/components/language'
 
 import {SuggestedInput} from '@/components/data-suggestions'
-import {Label} from '@/components/language'
+import {Label,useLocale} from '@/components/language'
 import {useState} from 'react';
 import {clientPortalPath} from '@/lib/platform/portals.mjs';
 import Link from 'next/link';
@@ -13,6 +13,7 @@ import map from '@/lib/platform/india-map.json';
 const locations:Record<string,[number,number]>={'Delhi':[77.2,28.6],'Punjab':[75.3,31.1],'Maharashtra':[75.7,19.7],'Gujarat':[71.2,22.6],'Tamil Nadu':[78.7,11.1],'Karnataka':[75.7,14.5],'West Bengal':[87.8,23.5],'Odisha':[84.4,20.5],'Madhya Pradesh':[78.5,23.9],'Assam':[92.7,26.2]};
 const number=(v:number)=>v.toLocaleString('en-IN');
 export function NationalExplorer({data,initial={}}:{data:DashboardData;initial?:{region?:string;state?:string;institution?:string;program?:string}}){
+ const {t}=useLocale();
  const [region,setRegion]=useState(initial.region||''),[state,setState]=useState(initial.state||''),[institution,setInstitution]=useState(initial.institution||''),[program,setProgram]=useState(initial.program||'');
  const [search,setSearch]=useState(''),[status,setStatus]=useState(''),[page,setPage]=useState(1);
  function select(r='',s='',i='',p=''){setRegion(r);setState(s);setInstitution(i);setProgram(p);setPage(1);const q=new URLSearchParams({year:String(data.year)});Object.entries({region:r,state:s,institution:i,program:p}).forEach(([k,v])=>{if(v)q.set(k,v)});window.history.replaceState(null,'',clientPortalPath('/dashboard?'+q.toString()))}
@@ -158,9 +159,9 @@ export function NationalExplorer({data,initial={}}:{data:DashboardData;initial?:
 </div>
 <svg viewBox="0 0 470 450" className="india-footprint" aria-label="Illustrative India map with selectable state enrolment markers">
 <path d={map.path} className="india-country-outline"/>{stateMap.states.map(shape=>{const schools=data.institutions.filter(i=>i.state===shape.name&&(!region||i.region===region));const count=stateTotals[shape.name]||0;return <path key={shape.name} d={shape.path} className={`state-area ${state===shape.name?'selected':''} ${schools.length?'has-data':''}`} style={{fill:schools.length?`rgba(20,184,166,${.16+count/maxState*.7})`:undefined}} role={schools.length?'button':undefined} tabIndex={schools.length?0:undefined} aria-label={`${shape.name}: ${schools.length?number(count)+' seeded enrolments':'no seeded institutions in this scope'}`} onClick={()=>{if(schools.length)select(schools[0].region,shape.name)}} onKeyDown={e=>{if(schools.length&&(e.key==='Enter'||e.key===' ')){e.preventDefault();select(schools[0].region,shape.name)}}}>
-<title><Label text={`${shape.name}: ${schools.length?number(count)+' seeded enrolments':'no seeded institutions in this scope'}`}/></title>
+<title>{t(`${shape.name}: ${schools.length?number(count)+' seeded enrolments':'no seeded institutions in this scope'}`)}</title>
 </path>})}{Object.entries(locations).map(([s,[lon,lat]])=>{const schools=data.institutions.filter(i=>i.state===s&&(!region||i.region===region));if(!schools.length)return null;const count=data.programs.filter(p=>schools.some(i=>i.id===p.institution_id)).reduce((n,p)=>n+p.enrolments,0);return <g key={s} role="button" tabIndex={0} aria-label={`${s}: ${number(count)} enrolments. Select state.`} onClick={()=>select(schools[0].region,s)} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();select(schools[0].region,s)}}} className={`map-marker ${state===s?'selected':''}`}>
-<title><Label text={`${s}: ${number(count)} enrolments`}/></title>
+<title>{t(`${s}: ${number(count)} enrolments`)}</title>
 <circle cx={(lon-67)*14+20} cy={(37-lat)*14+15} r={7+Math.sqrt(count)/6}/>
 <text x={(lon-67)*14+20} y={(37-lat)*14+39} textAnchor="middle">
 <Label text={s}/>

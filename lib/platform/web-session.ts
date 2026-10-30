@@ -1,4 +1,5 @@
 import {requestOrigin} from '@/lib/platform/origin'
+import {cache} from 'react'
 import {privilegedSession} from './mfa-session'
 import {localDemoUser} from './demo-session'
 import { migrateVerifiedOwner } from './owner-migration.mjs'
@@ -9,7 +10,7 @@ import { syncProfile,limit } from './workflows.mjs'
 import { AccessError } from './access.mjs'
 import {headers} from 'next/headers'
 import {validPortal,portalPath,rolePortal} from './portals.mjs'
-export async function signedInUser() {
+export const signedInUser=cache(async function signedInUser() {
  const demo=await localDemoUser();if(demo)return demo
  const client=await createSupabaseServerClient()
  if(!client)throw new AccessError('Authentication is unavailable.',503)
@@ -17,7 +18,7 @@ export async function signedInUser() {
  if(error||!user)throw new AccessError('Please sign in.',401)
  migrateVerifiedOwner(user)
  return user
-}
+})
 export async function pageSession(allowUnassigned=false) {
  const category=validPortal((await headers()).get('x-vidya-portal'))
  let user

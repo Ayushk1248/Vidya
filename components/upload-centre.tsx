@@ -7,6 +7,7 @@ import {clientPortalPath} from '@/lib/platform/portals.mjs'
 import {StageStepper,RingGauge,Skeleton,Feedback,Provenance,PresentationDialog} from './presentation'
 import {Label} from '@/components/language'
 import {StudentForm} from './student-form'
+import {useVisiblePolling} from './use-visible-polling'
 import {useEffect,useState,useCallback} from 'react'
 type Finding={code:string;severity:string;message:string;justification?:string|null}
 type Row={row_number:number;student_id:string;apaar:string;name:string;dob:string;program_id:string;admission_date:string;scheme:string;category:string;nationality:string;passport:string;result:{status:string;issues:Finding[];provenance:Record<string,string>}}
@@ -18,11 +19,11 @@ const rowStatus:Record<string,string>={ok:'Checks passed',error:'Correction requ
 export function UploadCentre({role}:{role:string}){
  const [list,setList]=useState<Batch[]>([]),[selected,setSelected]=useState(''),[detail,setDetail]=useState<Detail|null>(null),[page,setPage]=useState(1),[filter,setFilter]=useState('all'),[severity,setSeverity]=useState('all'),[rule,setRule]=useState('all'),[search,setSearch]=useState(''),[query,setQuery]=useState(''),[message,setMessage]=useState(''),[busy,setBusy]=useState(false),[edit,setEdit]=useState<Row|null>(null),[code,setCode]=useState(''),[demo,setDemo]=useState(''),[reason,setReason]=useState(''),[rules,setRules]=useState<Rule[]>([]),[caps,setCaps]=useState<{scheme:string;cap_percent:number}[]>([]),[duplicates,setDuplicates]=useState<{enrolment_id:string;message:string}[]>([])
  const operator=role==='institution_operator',head=role==='institution_head',admin=role==='aicte_admin'
- async function get(url:string){const r=await fetch(url,{cache:'no-store'});const j=await r.json();if(!r.ok)throw new Error(j.error);return j}
- const refresh=useCallback(async()=>{try{const data=await get('/api/platform/uploads');setList(data.batches);setDuplicates(data.duplicates);if(selected)setDetail(await get(`/api/platform/uploads?id=${selected}&page=${page}&filter=${filter}&severity=${severity}&rule=${rule}&q=${encodeURIComponent(query)}`))}catch(e){setMessage((e as Error).message)}},[selected,page,filter,severity,rule,query])
+ async function get(url:string,signal?:AbortSignal){const r=await fetch(url,{cache:'no-store',signal});const j=await r.json();if(!r.ok)throw new Error(j.error);return j}
+ const refresh=useCallback(async(signal?:AbortSignal)=>{try{const data=await get('/api/platform/uploads',signal);setList(data.batches);setDuplicates(data.duplicates);if(selected)setDetail(await get(`/api/platform/uploads?id=${selected}&page=${page}&filter=${filter}&severity=${severity}&rule=${rule}&q=${encodeURIComponent(query)}`,signal))}catch(e){if(!signal?.aborted)setMessage((e as Error).message)}},[selected,page,filter,severity,rule,query])
  useEffect(()=>{queueMicrotask(()=>{const batch=new URLSearchParams(window.location.search).get('batch');if(batch)setSelected(batch)})},[])
  useEffect(()=>{if(selected)window.history.replaceState(null,'',clientPortalPath('/uploads?batch='+encodeURIComponent(selected)))},[selected])
- useEffect(()=>{void refresh();const timer=setInterval(refresh,3000);return()=>clearInterval(timer)},[refresh])
+ useVisiblePolling(refresh,list.some(batch=>['queued','processing'].includes(batch.status))?3000:15000)
  async function action(action:string,extra:Record<string,unknown>={}){setBusy(true);setMessage('');try{const r=await fetch('/api/platform/uploads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action,id:selected,...extra})});const j=await r.json();if(!r.ok)throw new Error(j.error);if(j.id){setSelected(j.id);setPage(1)}if(j.code)setDemo(j.code);setMessage(j.message||'Saved successfully.');await refresh();return true}catch(e){setMessage((e as Error).message);return false}finally{setBusy(false)}}
  async function upload(e:React.FormEvent<HTMLFormElement>){e.preventDefault();const data=new FormData(e.currentTarget);data.set('synthetic','true');setBusy(true);setMessage('');try{const r=await fetch('/api/platform/uploads',{method:'POST',body:data});const j=await r.json();if(!r.ok)throw new Error(j.error);setSelected(j.id);setPage(1);setMessage('File queued. Validation results will appear automatically.');await refresh()}catch(e){setMessage((e as Error).message)}finally{setBusy(false)}}
  const exportParams=new URLSearchParams({id:selected,download:'csv',filter,severity,rule,q:query});

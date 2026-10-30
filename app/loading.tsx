@@ -1,0 +1,2 @@
+import {Label} from '@/components/language'
+export default function Loading(){return <main className="route-loading" aria-busy="true" aria-label="Loading workspace"><div className="route-loading-brand">VIDYA</div><p role="status"><Label text="Loading workspace"/></p><div className="route-loading-layout" aria-hidden="true"><div className="route-loading-sidebar"/ ><div className="route-loading-content"><div/><div/><div/></div></div></main>}

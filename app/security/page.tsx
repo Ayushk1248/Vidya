@@ -4,5 +4,9 @@ import {redirect} from 'next/navigation'
 import {mfaState} from '@/lib/platform/mfa.mjs'
 import {WorkspaceShell,PageHeading} from '@/components/workspace-shell'
 import {SecurityCentre} from '@/components/security-centre'
+import {headers} from 'next/headers'
+import {demoEnabled} from '@/lib/platform/demo.mjs'
+import {portalPath,rolePortal} from '@/lib/platform/portals.mjs'
+import {workspaceHome} from '@/lib/platform/workspace-navigation'
 export const dynamic='force-dynamic'
-export default async function Security(){let user;try{user=await signedInUser()}catch{redirect('/login')}const actor=actorFor(user.id);if(!actor)redirect('/onboarding');return <WorkspaceShell actor={actor} name={user.user_metadata?.display_name||'Account'} active="security"><PageHeading eyebrow="ACCOUNT PROTECTION" title="A second layer for sensitive actions." description="Time-based authenticator codes, one-use recovery codes and short-lived privileged sessions."/><SecurityCentre enabled={!!mfaState(user.id).enabled} demo={user.id.startsWith('demo-')}/></WorkspaceShell>}
+export default async function Security(){let user;try{user=await signedInUser()}catch{redirect('/login')}const actor=actorFor(user.id);if(!actor)redirect('/onboarding');const optional=demoEnabled((await headers()).get('host')||'');return <WorkspaceShell actor={actor} name={user.user_metadata?.display_name||'Account'} active="security"><PageHeading eyebrow="ACCOUNT PROTECTION" title={optional?'Optional account security':'A second layer for sensitive actions.'} description={optional?'Authenticator verification is optional for this local prototype. You can open your workspace with your signed-in account.':'Time-based authenticator codes, one-use recovery codes and short-lived privileged sessions.'}/><SecurityCentre enabled={!!mfaState(user.id).enabled} demo={user.id.startsWith('demo-')} optional={optional} workspaceHref={portalPath(actor.role==='aicte_admin'?'/access':workspaceHome(actor.role),rolePortal(actor.role))}/></WorkspaceShell>}

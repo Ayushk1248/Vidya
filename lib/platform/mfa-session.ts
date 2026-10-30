@@ -1,4 +1,5 @@
-import {cookies} from 'next/headers'
+import {cookies,headers} from 'next/headers'
 import {unseal} from './tokens.mjs'
 import {assignmentScope} from './account-roles.mjs'
-export async function privilegedSession(actor:{role:string;user_id:string;institution_id?:string|null;region?:string|null;student_id?:string|null}){if(actor.user_id.startsWith('demo-'))return true;if(!['aicte_admin','regional_officer','institution_head','system_admin'].includes(actor.role))return true;const value=unseal((await cookies()).get('vidya-mfa')?.value,'mfa');return value?.id===actor.user_id&&value?.scope===assignmentScope(actor)}
+import {requiresPrivilegedMfa} from './mfa-policy.mjs'
+export async function privilegedSession(actor:{role:string;user_id:string;institution_id?:string|null;region?:string|null;student_id?:string|null}){if(!requiresPrivilegedMfa(actor,(await headers()).get('host')||''))return true;const value=unseal((await cookies()).get('vidya-mfa')?.value,'mfa');return value?.id===actor.user_id&&value?.scope===assignmentScope(actor)}

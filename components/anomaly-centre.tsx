@@ -5,6 +5,7 @@ import {SuggestedInput,SuggestedTextarea} from '@/components/data-suggestions'
 import {RingGauge,Feedback,CountUp} from './presentation'
 import Link from 'next/link'
 import {useCallback,useEffect,useState} from 'react'
+import {useVisiblePolling} from './use-visible-polling'
 import {Activity,ArrowUpRight,CheckCircle2,RefreshCw,ShieldCheck,SlidersHorizontal} from 'lucide-react'
 import type {Overview,Detail,AnomalyPolicy} from '@/lib/platform/anomalies.mjs'
 const date=(value:string|null)=>value?new Date(value).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}):'Not yet available'
@@ -12,8 +13,8 @@ export function AnomalyCentre({initial,role}:{initial:Overview;role:string}){
  const [data,setData]=useState(initial),[year,setYear]=useState(2026),[band,setBand]=useState('attention'),[status,setStatus]=useState('all'),[search,setSearch]=useState(''),[region,setRegion]=useState('all'),[selected,setSelected]=useState(''),[detail,setDetail]=useState<Detail|null>(null),[message,setMessage]=useState(''),[busy,setBusy]=useState(false),[note,setNote]=useState(''),[decision,setDecision]=useState('cleared'),[settings,setSettings]=useState(false)
  const admin=role==='aicte_admin',officer=admin||role==='regional_officer'
  const fetchJson=async(url:string,options?:RequestInit)=>{const response=await fetch(url,{cache:'no-store',...options});const body=await response.json();if(!response.ok)throw new Error(body.error||'Request failed.');return body}
- const refresh=useCallback(async()=>{try{const next:Overview=await fetchJson(`/api/platform/anomalies?year=${year}`);setData(next);if(selected){if(next.rows.some(r=>r.id===selected))setDetail(await fetchJson(`/api/platform/anomalies?id=${selected}`));else{setSelected('');setDetail(null)}}}catch(e){setMessage((e as Error).message)}},[year,selected])
- useEffect(()=>{queueMicrotask(()=>{void refresh()});const timer=setInterval(refresh,5000);return()=>clearInterval(timer)},[refresh])
+ const refresh=useCallback(async(signal?:AbortSignal)=>{try{const next:Overview=await fetchJson(`/api/platform/anomalies?year=${year}`,{signal});setData(next);if(selected){if(next.rows.some(r=>r.id===selected))setDetail(await fetchJson(`/api/platform/anomalies?id=${selected}`,{signal}));else{setSelected('');setDetail(null)}}}catch(e){if(!signal?.aborted)setMessage((e as Error).message)}},[year,selected])
+ useVisiblePolling(refresh,['queued','running'].includes(data.job?.status||'')?5000:30000)
  useEffect(()=>{if(detail?.snapshot.id)document.getElementById('anomaly-evidence')?.scrollIntoView({behavior:'smooth',block:'start'})},[detail?.snapshot.id])
  async function mutate(action:string,payload:Record<string,unknown>){setBusy(true);setMessage('');try{const result=await fetchJson('/api/platform/anomalies',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action,...payload})});setMessage(action==='run'?(result.reused?'Current analysis is already available or queued.':'Analysis queued. Results will refresh automatically.'):action==='policy'?'Policy saved. Refresh analysis to apply it.':'Review saved with an audit event.');if(action==='review')setNote('');await refresh()}catch(e){setMessage((e as Error).message)}finally{setBusy(false)}}
  const [queuePage,setQueuePage]=useState(1);

@@ -6,6 +6,7 @@
     "dev": "node scripts/dev.mjs",
     "build": "next build",
     "start": "node scripts/dev.mjs --production",
+    "preview": "node scripts/preview.mjs",
     "lint": "eslint",
     "init": "node scripts/init.mjs",
     "demo:setup": "node --env-file=.env.local scripts/setup-demo.mjs",

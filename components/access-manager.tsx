@@ -5,14 +5,15 @@ import {Label,LocalizedButton} from '@/components/language'
 
 import {useState} from 'react'
 import {AccessDecisionForm} from './access-decision-form'
+import {useAccessView} from './access-workspace'
 import {useRouter} from 'next/navigation'
 import {roles,administratorAssignedRoles} from '@/lib/platform/access.mjs'
 import type {accessQueue,AccessRequest} from '@/lib/platform/workflows.mjs'
 export function AccessManager({data,currentUserId,reviewerRole}:{data:ReturnType<typeof accessQueue>;currentUserId:string;reviewerRole:string}){
- const [tab,setTab]=useState('pending'),[active,setActive]=useState<AccessRequest|null>(null),[member,setMember]=useState<string|null>(null),[note,setNote]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState(''),[success,setSuccess]=useState('');const router=useRouter()
+ const {tab,setTab}=useAccessView();const [active,setActive]=useState<AccessRequest|null>(null),[member,setMember]=useState<string|null>(null),[note,setNote]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState(''),[success,setSuccess]=useState('');const router=useRouter()
  async function send(body:Record<string,unknown>){setBusy(true);setError('');setSuccess('');try{const res=await fetch('/api/platform/access',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const result=await res.json();if(!res.ok)throw new Error(result.error);setActive(null);setMember(null);setNote('');setSuccess(body.action==='assign_staff'?'Staff access approved. The account can open its assigned workspace.':body.action==='revoke'?'Access revoked. The account no longer has workspace access.':body.decision==='approved'?'Access approved. The applicant can open their workspace.':'Request rejected. The applicant can see your note and submit a corrected request.');if(body.action==='review')setTab('history');router.refresh()}catch(e){setError(e instanceof Error?e.message:'Action failed.')}finally{setBusy(false)}}
  const rows=data.requests.filter(r=>tab==='pending'?r.status==='pending':r.status!=='pending')
- return <>{reviewerRole==='aicte_admin'&&<details className="workspace-disclosure">
+ return <section id="access-list" className="access-list-section" tabIndex={-1} aria-label="Access requests and accounts">{reviewerRole==='aicte_admin'&&<details className="workspace-disclosure">
 <summary><Label text={"Assign an AICTE or system staff account"}/></summary>
 <div className="disclosure-body">
 <p><Label text={"Only an AICTE administrator can grant these roles. Confirm the person's affiliation and account ID first. The account must already have signed in."}/></p>
@@ -206,5 +207,5 @@ export function AccessManager({data,currentUserId,reviewerRole}:{data:ReturnType
 <Label text={active.status}/>: <Label text={active.review_note}/>
 </p>:<AccessDecisionForm active={active} member={member} currentUserId={currentUserId} note={note} setNote={setNote} busy={busy} error={error} send={send}/>}</div>
 </section>
-</div>}</>
+</div>}</section>
 }
